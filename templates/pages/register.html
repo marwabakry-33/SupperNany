@@ -1,0 +1,32 @@
+<h2>register</h2>
+
+<form method="POST" action="">
+    {%csrf_token%}
+ 
+    <div class="login-container"> 
+        <label for="id_email"> {{form.username.label}}</label>
+        {{form.username}}
+    </div>
+
+    <div class="login-container"> 
+        <label for="id_email"> {{form.email.label}}</label>
+        {{form.email}}<br>
+    </div>
+  
+    <div class="login-container"> 
+        <label for="id_email">  {{form.password1.label}}</label>
+        {{form.password1}}<br>
+    </div>
+  
+    <div class="login-container"> 
+        <label for="id_email">  {{form.password2.label}}</label>
+        {{form.password2}}<br>
+    </div>
+    <button type="submit">submit</button>
+    <br>
+    <br>
+    {{form.errors}}
+    <br>
+
+    <a href="{% url 'login' %}">login page</a>
+</form>

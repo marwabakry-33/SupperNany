@@ -1,0 +1,17 @@
+
+<form class="login-form" method="POST" action="{% url 'login' %}">
+    {% csrf_token %}
+    <h2>Login</h2>
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit" class="btn">Login</button>
+    <a href="{% url 'reset_password' %}">Forget Password</a>
+{% for message in messages %}
+        {{ message }}
+{% endfor %}

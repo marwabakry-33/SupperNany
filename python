@@ -1,0 +1,4 @@
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, pages, sessions
+Running migrations:
+  Applying pages.0003_alter_child_day_alter_child_month_alter_child_year... OK

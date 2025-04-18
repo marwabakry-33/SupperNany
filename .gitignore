@@ -1,0 +1,6 @@
+# created by virtualenv automatically
+build/
+dist/
+.vscode/
+__pycache__/
+SupperNany/
