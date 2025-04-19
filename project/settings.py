@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework_simplejwt',
     'corsheaders',
-    
 ]
 
 
@@ -174,4 +173,3 @@ EMAIL_HOST_PASSWORD = 'your_app_password'  # كلمة المرور الخاصة 
 
 
 LOGIN_URL = 'login'
-STATIC_ROOT = BASE_DIR / "staticfiles"
