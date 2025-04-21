@@ -24,15 +24,15 @@ class AdviceMother(models.Model):
     advice_mather = models.CharField(max_length=200 ,null=True)
     def __str__(self): return self.advice_mather
 
-# ✅ أولًا: تعريف Mother
+# تعريف نموذج Mother بدون حقل user
 class Mother(models.Model):
-    first_name = models.CharField(max_length=190, null=True) 
+    first_name = models.CharField(max_length=190, null=True)
     last_name = models.CharField(max_length=190, null=True)
     email = models.EmailField(unique=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.first_name
+
 
 # ✅ بعد كده: تعريف Child
 class Child(models.Model):

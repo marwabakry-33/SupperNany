@@ -28,41 +28,55 @@ class ChildSerializer(serializers.ModelSerializer):
         mother = self.context.get('mother')  # الحصول على الأم من السياق
         child = Child.objects.create(mother=mother, **validated_data)
         return child
+from django.contrib.auth.models import User
 
+from django.contrib.auth.models import User
+from rest_framework import serializers
+from .models import Mother
 
 class MotherSerializer(serializers.ModelSerializer):
-    # تضمين فقط الحقول المتعلقة بالأم
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     email = serializers.EmailField()
-    username = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = Mother
-        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'password']
-
-    def validate_email(self, value):
-        if Mother.objects.filter(email=value).exists():
-            raise serializers.ValidationError("البريد الإلكتروني مسجل مسبقًا")
-        return value
+        fields = ['id', 'first_name', 'last_name', 'email', 'password', 'confirm_password']
 
     def validate(self, data):
-        if User.objects.filter(username=data['username']).exists():
-            raise serializers.ValidationError({"username": "اسم المستخدم مستخدم من قبل."})
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError({"confirm_password": "كلمة المرور غير متطابقة."})
+
+        # ✅ التحقق من عدم وجود المستخدم مسبقًا
+        if User.objects.filter(username=data['email']).exists():
+            raise serializers.ValidationError({"email": "هذا البريد الإلكتروني مسجل مسبقًا."})
+
         return data
 
     def create(self, validated_data):
-        username = validated_data.pop('username')
         password = validated_data.pop('password')
+        validated_data.pop('confirm_password')
 
-        # إنشاء مستخدم الأم
-        user = User.objects.create_user(username=username, password=password)
+        # ✅ إنشاء المستخدم أولًا
+        user = User.objects.create_user(
+            username=validated_data['email'],
+            email=validated_data['email'],
+            password=password,
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+        )
 
-        # إنشاء الأم وربطها بالمستخدم
-        mother = Mother.objects.create(user=user, **validated_data)
+        # ✅ بعد كده أنشئ الأم بدون ربط بـ user
+        mother = Mother.objects.create(
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            email=validated_data['email'],
+        )
 
         return mother
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -8,35 +8,56 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+from .serializers import MotherSerializer
+
+from rest_framework.authtoken.models import Token  # لازم تستورده
+
 @api_view(['POST'])
 def register(request):
-    # تحقق من صحة الحقول
-    if not isinstance(request.data.get('username'), str):
-        return Response({"error": "username يجب أن يكون من نوع string"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    if not isinstance(request.data.get('password'), str):
-        return Response({"error": "password يجب أن يكون من نوع string"}, status=status.HTTP_400_BAD_REQUEST)
+    password = request.data.get('password')
+    confirm_password = request.data.get('confirm_password')
+    email = request.data.get('email')
+
+    if not password or not isinstance(password, str):
+        return Response({"error": "password يجب أن يكون من نوع string وغير فارغ"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not confirm_password or not isinstance(confirm_password, str):
+        return Response({"error": "confirm_password يجب أن يكون من نوع string وغير فارغ"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if password != confirm_password:
+        return Response({"error": "كلمة المرور غير متطابقة"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not email or not isinstance(email, str):
+        return Response({"error": "email يجب أن يكون من نوع string وغير فارغ"}, status=status.HTTP_400_BAD_REQUEST)
 
     # التحقق من صحة البيانات باستخدام السيريالايزر
     serializer = MotherSerializer(data=request.data)
     if serializer.is_valid():
-        mother = serializer.save()  # إنشاء الأم والمستخدم
+        mother = serializer.save()
 
-        # إنشاء التوكن
-        user = mother.user
-        token, created = AuthToken.objects.get_or_create(user=user)
-        
-        # الحصول على بيانات الأم فقط
+        # ✅ جلب المستخدم اللي اتسجل حالًا باستخدام نفس الإيميل
+        user = User.objects.get(username=email)
+
+        # ✅ إنشاء التوكن
+        token, created = Token.objects.get_or_create(user=user)
+
+        # بيانات الأم
         mother_data = MotherSerializer(mother).data
 
         return Response({
             "message": "تم التسجيل بنجاح",
-            "token": token.key,
-            "mother": mother_data  # إرجاع بيانات الأم فقط
+            "token": token.key,            # ✅ إرسال التوكن
+            "mother": mother_data
         }, status=status.HTTP_201_CREATED)
-    
-    # في حالة وجود أخطاء في البيانات
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
 @api_view(['GET'])
 def public_data_view(request):

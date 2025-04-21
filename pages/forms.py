@@ -4,6 +4,6 @@ from django.contrib.auth.models import User
 
 
 class CreateNewUser(UserCreationForm):
-     class Meta:
+   class Meta:
         model = User
         fields=['username','password1','password2','email']
