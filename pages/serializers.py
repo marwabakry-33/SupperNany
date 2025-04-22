@@ -47,11 +47,11 @@ class MotherSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"confirm_password": "كلمة المرور غير متطابقة."})
+            raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
 
         # ✅ التحقق من عدم وجود المستخدم مسبقًا
         if User.objects.filter(username=data['email']).exists():
-            raise serializers.ValidationError({"email": "هذا البريد الإلكتروني مسجل مسبقًا."})
+            raise serializers.ValidationError({"email": "This email is already registered."})
 
         return data
 

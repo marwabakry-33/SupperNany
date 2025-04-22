@@ -14,6 +14,7 @@ from rest_framework import status
 from .serializers import MotherSerializer
 
 from rest_framework.authtoken.models import Token  # لازم تستورده
+from rest_framework_simplejwt.tokens import RefreshToken
 
 @api_view(['POST'])
 def register(request):
@@ -22,39 +23,36 @@ def register(request):
     email = request.data.get('email')
 
     if not password or not isinstance(password, str):
-        return Response({"error": "password يجب أن يكون من نوع string وغير فارغ"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"Password must be a non-empty string."}, status=status.HTTP_400_BAD_REQUEST)
 
     if not confirm_password or not isinstance(confirm_password, str):
-        return Response({"error": "confirm_password يجب أن يكون من نوع string وغير فارغ"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Confirm password must be a non-empty string."}, status=status.HTTP_400_BAD_REQUEST)
 
     if password != confirm_password:
-        return Response({"error": "كلمة المرور غير متطابقة"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
 
     if not email or not isinstance(email, str):
-        return Response({"error": "email يجب أن يكون من نوع string وغير فارغ"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Email must be a non-empty string."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # التحقق من صحة البيانات باستخدام السيريالايزر
     serializer = MotherSerializer(data=request.data)
     if serializer.is_valid():
         mother = serializer.save()
-
-        # ✅ جلب المستخدم اللي اتسجل حالًا باستخدام نفس الإيميل
         user = User.objects.get(username=email)
 
-        # ✅ إنشاء التوكن
-        token, created = Token.objects.get_or_create(user=user)
+        # ✅ توليد JWT Token
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
 
-        # بيانات الأم
         mother_data = MotherSerializer(mother).data
 
         return Response({
-            "message": "تم التسجيل بنجاح",
-            "token": token.key,            # ✅ إرسال التوكن
+            "message": "Registration successful",
+            "access": access_token,
+            "refresh": str(refresh),
             "mother": mother_data
         }, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 
