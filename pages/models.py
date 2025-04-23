@@ -26,6 +26,7 @@ class AdviceMother(models.Model):
 
 # تعريف نموذج Mother بدون حقل user
 class Mother(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=190, null=True)
     last_name = models.CharField(max_length=190, null=True)
     email = models.EmailField(unique=True)
