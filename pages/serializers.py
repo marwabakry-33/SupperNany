@@ -24,15 +24,11 @@ class ChildSerializer(serializers.ModelSerializer):
         model = Child
         fields = ['baby', 'birth_date', 'type', 'feedings', 'sleeping', 'Diapers', 'weight', 'height', 'photo']
 
-    def create(self, validated_data):
-        mother = self.context.get('mother')  # الحصول على الأم من السياق
-        child = Child.objects.create(mother=mother, **validated_data)
-        return child
-from django.contrib.auth.models import User
 
-from django.contrib.auth.models import User
-from rest_framework import serializers
-from .models import Mother
+class PrChildSerializer(serializers.Serializer):
+    type = serializers.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')])
+    birth_date = serializers.DateField()
+
 
 class MotherSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField()

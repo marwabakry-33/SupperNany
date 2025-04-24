@@ -8,9 +8,10 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
+from rest_framework.views import APIView
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework import status
 from .serializers import MotherSerializer
 
 from rest_framework.authtoken.models import Token  # لازم تستورده
@@ -96,11 +97,41 @@ def user_login(request):
             'message': 'Login successful',
             'token': token.key,
             'user_id': user.id,
-            'username': user.username
+            'username': user.username 
         }, status=200)
     else:
         print("❌ Invalid credentials!")  # ❌ طباعة عند فشل تسجيل الدخول
         return Response({'message': 'Invalid credentials'}, status=400)
+
+# views.py
+
+class PreRegisterChildAPIView(APIView):
+    def post(self, request):
+        serializer = PrChildSerializer(data=request.data)
+        if serializer.is_valid(): # تخزين في session
+            request.session['child_type'] = serializer.validated_data['type']
+            request.session['child_birth_date'] = str(serializer.validated_data['birth_date'])
+            return Response({'message': 'تم حفظ بيانات الطفل مؤقتاً'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class RegisterChildAPIView(APIView):
+    def post(self, request):
+        # جبنا البيانات من الجلسة
+        child_type = request.session.get('child_type')
+        birth_date = request.session.get('child_birth_date')
+
+        # ضفناهم للبيانات اللي جاية من الواجهة
+        data = request.data.copy()
+        if child_type and birth_date:
+            data['type'] = child_type
+            data['birth_date'] = birth_date
+
+        serializer = ChildSerializer(data=data)
+        if serializer.is_valid():
+            # تأكدي هنا إن الأم مرتبطة بالمستخدم (لو ده موجود عندك)
+            serializer.save(mother=request.user.mother)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 from django.views.decorators.csrf import csrf_exempt
 
