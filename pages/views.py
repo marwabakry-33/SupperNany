@@ -17,11 +17,19 @@ from .serializers import MotherSerializer
 from rest_framework.authtoken.models import Token  # لازم تستورده
 from rest_framework_simplejwt.tokens import RefreshToken
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 @api_view(['POST'])
 def register(request):
     password = request.data.get('password')
     confirm_password = request.data.get('confirm_password')
     email = request.data.get('email')
+    
+    logger.info(f"Password: {password}")
+    logger.info(f"Confirm Password: {confirm_password}")
+    logger.info(f"Email: {email}")
 
     if not password or not isinstance(password, str):
         return Response({"error":"Password must be a non-empty string."}, status=status.HTTP_400_BAD_REQUEST)
@@ -74,8 +82,8 @@ class PreRegisterChildAPIView(APIView):
     def post(self, request):
         serializer = PrChildSerializer(data=request.data)
         if serializer.is_valid(): # تخزين في session
-            request.session['child_type'] = serializer.validated_data['type ']
-            request.session['child_birth_date'] = str(serializer.validated_data['birth_date '])
+            request.session['child_type'] = serializer.validated_data['type']
+            request.session['child_birth_date'] = str(serializer.validated_data['birth_date'])
             return Response({'message': 'Child type and date have been successfully set'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
