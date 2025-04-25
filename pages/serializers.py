@@ -5,6 +5,9 @@ from .models import *
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token as AuthToken
 
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 # Create serializer for Task
 class TaskSerializer(serializers.ModelSerializer):
@@ -30,6 +33,12 @@ class PrChildSerializer(serializers.Serializer):
     birth_date = serializers.DateField()
 
 
+import re
+from rest_framework import serializers
+from django.contrib.auth.models import User
+from .models import Mother
+
+
 class MotherSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -42,20 +51,41 @@ class MotherSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'email', 'password', 'confirm_password']
 
     def validate(self, data):
+        # تحقق من تطابق كلمة المرور
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
 
-        # ✅ التحقق من عدم وجود المستخدم مسبقًا
+        # تحقق من وجود المستخدم مسبقًا
         if User.objects.filter(username=data['email']).exists():
             raise serializers.ValidationError({"email": "This email is already registered."})
 
+        # تحقق من صحة كلمة المرور
+        self.validate_password(data['password'])
+
         return data
+
+    def validate_password(self, password):
+        # تحقق من وجود حرف كبير
+        if not re.search(r'[A-Z]', password):
+            raise serializers.ValidationError("Password must include at least one uppercase letter.")
+        
+        # تحقق من وجود حرف صغير
+        if not re.search(r'[a-z]', password):
+            raise serializers.ValidationError("Password must include at least one lowercase letter.")
+        
+        # تحقق من وجود رقم
+        if not re.search(r'\d', password):
+            raise serializers.ValidationError("Password must include at least one number.")
+        
+        # تحقق من وجود رمز خاص
+        if not re.search(r'[@$!%*#?&]', password):
+            raise serializers.ValidationError("Password must include at least one special character (@$!%*#?&).")
 
     def create(self, validated_data):
         password = validated_data.pop('password')
         validated_data.pop('confirm_password')
 
-        # ✅ إنشاء المستخدم أولًا
+        # إنشاء المستخدم أولاً
         user = User.objects.create_user(
             username=validated_data['email'],
             email=validated_data['email'],
@@ -64,7 +94,7 @@ class MotherSerializer(serializers.ModelSerializer):
             last_name=validated_data['last_name'],
         )
 
-        # ✅ بعد كده أنشئ الأم بدون ربط بـ user
+        # إنشاء الأم بعد ربطها بالمستخدم
         mother = Mother.objects.create(
             user=user,
             first_name=validated_data['first_name'],
@@ -122,24 +152,53 @@ class HowToSerializer(serializers.ModelSerializer):
     class Meta:
         model = HowTo
         fields = '__all__'
-
-
-# ✅ تسجيل الدخول
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        from django.contrib.auth import authenticate
+        # التحقق من صحة بيانات المستخدم
         user = authenticate(username=data['username'], password=data['password'])
+        
         if user:
+            # توليد الـ JWT Tokens
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            
+            # إرجاع الـ response
             return {
                 'message': 'Login successful',
-               
+                'access': access_token,  # توكن الوصول
+                'refresh': str(refresh),  # توكن التحديث
+                'user_id': user.id,
+                'username': user.username
             }
         else:
             raise serializers.ValidationError({'message': 'Invalid credentials'})
 
+import re
+class PasswordResetSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    new_password = serializers.CharField(min_length=8)
+
+    def validate_new_password(self, value):
+        # لازم يكون فيه على الأقل حرف كبير، صغير، رقم
+        if not re.search(r'[A-Z]', value):
+            raise serializers.ValidationError("Password must include at least one uppercase letter.")
+        if not re.search(r'[a-z]', value):
+            raise serializers.ValidationError("Password must include at least one lowercase letter.")
+        if not re.search(r'\d', value):
+            raise serializers.ValidationError("Password must include at least one number.")
+        if not re.search(r'[@$!%*#?&]', value):
+            raise serializers.ValidationError("Password must include at least one special character (@$!%*#?&).")
+        return value
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        # يمكن إضافة تحقق إضافي للبريد الإلكتروني إذا لزم الأمر
+        return value
 
 # ✅ تسجيل الخروج
 class LogoutSerializer(serializers.Serializer):

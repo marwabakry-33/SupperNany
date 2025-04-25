@@ -76,7 +76,7 @@ class PreRegisterChildAPIView(APIView):
         if serializer.is_valid(): # تخزين في session
             request.session['child_type'] = serializer.validated_data['type ']
             request.session['child_birth_date'] = str(serializer.validated_data['birth_date '])
-            return Response({'message': "Child type and date have been successfully set"}, status=status.HTTP_200_OK)
+            return Response({'message': 'Child type and date have been successfully set'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterChildAPIView(APIView):
@@ -120,25 +120,51 @@ def logout(request):
 
     return Response({'message': 'Logout successful'}, status=200)
 
-
 @api_view(['POST'])
 def user_login(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid():
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
 
-    print(f"🔍 Trying to authenticate: {username} - {password}")  # ✅ طباعة البيانات للتحقق
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'message': 'Login successful',
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                'user_id': user.id,
+                'username': user.username
+            }, status=status.HTTP_200_OK)
+        return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        mylogin(request, user)
-        token, created = Token.objects.get_or_create(user=user)
-        print("✅ Login successful!")  # ✅ تأكيد نجاح تسجيل الدخول
-        return Response({
-            'message': 'Login successful',
-            'token': token.key,
-            'user_id': user.id,
-            'username': user.username 
-        }, status=200)
-    else:
-        print("❌ Invalid credentials!")  # ❌ طباعة عند فشل تسجيل الدخول
-        return Response({'message': 'Invalid credentials'}, status=400)
+
+@api_view(['POST'])
+def RequestPasswordResetAPIView(request):
+    serializer = PasswordResetRequestSerializer(data=request.data)
+    if serializer.is_valid():
+        email = serializer.validated_data['email']
+        try:
+            user = User.objects.get(email=email)
+            return Response({
+                "message": "Email found. Now you can reset the password.",
+                "user_id": user.id
+            }, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "Email not found"}, status=status.HTTP_404_NOT_FOUND)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def  ResetPasswordAPIView(request):
+    user_id = request.data.get('user_id')
+    new_password = request.data.get('new_password')
+
+    try:
+        user = User.objects.get(id=user_id)
+        user.set_password(new_password)
+        user.save()
+        return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
