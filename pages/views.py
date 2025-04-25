@@ -57,19 +57,6 @@ def register(request):
 
 
 
-
-@api_view(['GET'])
-def public_data_view(request):
-    context = {
-        'Advice Babies': AdviceBabySerializer(AdviceBaby.objects.all(), many=True).data,
-        'Advice Bads': AdviceBadSerializer(AdviceBad.objects.all(), many=True).data,
-        'Advice Mothers': AdviceMotherSerializer(AdviceMother.objects.all(), many=True).data,
-        'Advice Bottle': BabyBottleAdviceSerializer(AdviceBottel.objects.all(), many=True).data,
-        'Advice Moon': AdviceMoonSerializer(AdviceMoon.objects.all(), many=True).data,
-        'How To': HowToSerializer(HowTo.objects.all(), many=True).data,
-    }
-    return Response(context)
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def current_user(request):
@@ -81,37 +68,15 @@ def current_user(request):
         return Response(serializer.data)
     
     
-@api_view(['POST'])
-def user_login(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-
-    print(f"🔍 Trying to authenticate: {username} - {password}")  # ✅ طباعة البيانات للتحقق
-
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        mylogin(request, user)
-        token, created = Token.objects.get_or_create(user=user)
-        print("✅ Login successful!")  # ✅ تأكيد نجاح تسجيل الدخول
-        return Response({
-            'message': 'Login successful',
-            'token': token.key,
-            'user_id': user.id,
-            'username': user.username 
-        }, status=200)
-    else:
-        print("❌ Invalid credentials!")  # ❌ طباعة عند فشل تسجيل الدخول
-        return Response({'message': 'Invalid credentials'}, status=400)
-
 # views.py
 
 class PreRegisterChildAPIView(APIView):
     def post(self, request):
         serializer = PrChildSerializer(data=request.data)
         if serializer.is_valid(): # تخزين في session
-            request.session['child_type'] = serializer.validated_data['type']
-            request.session['child_birth_date'] = str(serializer.validated_data['birth_date'])
-            return Response({'message': 'تم حفظ بيانات الطفل مؤقتاً'}, status=status.HTTP_200_OK)
+            request.session['child_type'] = serializer.validated_data['type ']
+            request.session['child_birth_date'] = str(serializer.validated_data['birth_date '])
+            return Response({'message': "Child type and date have been successfully set"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterChildAPIView(APIView):
@@ -133,6 +98,17 @@ class RegisterChildAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+def public_data_view(request):
+    context = {
+        'Advice Babies': AdviceBabySerializer(AdviceBaby.objects.all(), many=True).data,
+        'Advice Bads': AdviceBadSerializer(AdviceBad.objects.all(), many=True).data,
+        'Advice Mothers': AdviceMotherSerializer(AdviceMother.objects.all(), many=True).data,
+        'Advice Bottle': BabyBottleAdviceSerializer(AdviceBottel.objects.all(), many=True).data,
+        'Advice Moon': AdviceMoonSerializer(AdviceMoon.objects.all(), many=True).data,
+        'How To': HowToSerializer(HowTo.objects.all(), many=True).data,
+    }
+    return Response(context)
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
@@ -144,3 +120,25 @@ def logout(request):
 
     return Response({'message': 'Logout successful'}, status=200)
 
+
+@api_view(['POST'])
+def user_login(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    print(f"🔍 Trying to authenticate: {username} - {password}")  # ✅ طباعة البيانات للتحقق
+
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        mylogin(request, user)
+        token, created = Token.objects.get_or_create(user=user)
+        print("✅ Login successful!")  # ✅ تأكيد نجاح تسجيل الدخول
+        return Response({
+            'message': 'Login successful',
+            'token': token.key,
+            'user_id': user.id,
+            'username': user.username 
+        }, status=200)
+    else:
+        print("❌ Invalid credentials!")  # ❌ طباعة عند فشل تسجيل الدخول
+        return Response({'message': 'Invalid credentials'}, status=400)
