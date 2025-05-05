@@ -17,6 +17,13 @@ from .serializers import MotherSerializer
 from rest_framework.authtoken.models import Token  # لازم تستورده
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
+import random
+from django.core.mail import send_mail
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from .models import User, PasswordResetCode
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -63,8 +70,6 @@ def register(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def current_user(request):
@@ -76,15 +81,29 @@ def current_user(request):
         return Response(serializer.data)
     
     
-# views.py
-
 class PreRegisterChildAPIView(APIView):
     def post(self, request):
         serializer = PrChildSerializer(data=request.data)
-        if serializer.is_valid(): # تخزين في session
+        if serializer.is_valid():
+            # إنشاء كائن Child جديد في قاعدة البيانات
+            child = Child.objects.create(
+                type=serializer.validated_data['type'],
+                birth_date=serializer.validated_data['birth_date']
+            )
+            
+            # تخزين البيانات في الـ session إذا كنت بحاجة لذلك
             request.session['child_type'] = serializer.validated_data['type']
             request.session['child_birth_date'] = str(serializer.validated_data['birth_date'])
-            return Response({'message': 'Child type and date have been successfully set'}, status=status.HTTP_200_OK)
+            
+            # إرسال الـ id مع البيانات في الاستجابة
+            return Response({
+                'id': child.id,
+                'type': child.type,
+                'birth_date': child.birth_date,
+                'message': 'Child type and date have been successfully set'
+            }, status=status.HTTP_201_CREATED)
+        
+        # إذا كانت البيانات غير صالحة
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterChildAPIView(APIView):
@@ -92,6 +111,7 @@ class RegisterChildAPIView(APIView):
         # جبنا البيانات من الجلسة
         child_type = request.session.get('child_type')
         birth_date = request.session.get('child_birth_date')
+
 
         # ضفناهم للبيانات اللي جاية من الواجهة
         data = request.data.copy()
@@ -156,23 +176,107 @@ def RequestPasswordResetAPIView(request):
         email = serializer.validated_data['email']
         try:
             user = User.objects.get(email=email)
+            
+            # توليد كود عشوائي
+            code = str(random.randint(100000, 999999))  # توليد كود تحقق عشوائي
+            
+            # حفظ الكود في قاعدة البيانات
+            PasswordResetCode.objects.update_or_create(
+                user=user,
+                defaults={'code': code}
+            )
+            
+            # إرسال الكود عبر البريد الإلكتروني
+            send_mail(
+                'Password Reset Code',  # الموضوع
+                f'Your verification code is: {code}',  # نص الرسالة
+                'marwabakry284@gmail.com',  # هنا سيكون البريد الإلكتروني الثابت الذي يرسل منه
+                [email],  # هذا هو البريد الإلكتروني للمستلم الذي أدخله المستخدم في الـ body
+                fail_silently=False,
+            )
+            
             return Response({
-                "message": "Email found. Now you can reset the password.",
+                "message": "Verification code sent to your email.",
                 "user_id": user.id
             }, status=status.HTTP_200_OK)
+
         except User.DoesNotExist:
             return Response({"error": "Email not found"}, status=status.HTTP_404_NOT_FOUND)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
-def  ResetPasswordAPIView(request):
+def ResetPasswordAPIView(request):
     user_id = request.data.get('user_id')
     new_password = request.data.get('new_password')
+    code = request.data.get('code')
 
     try:
         user = User.objects.get(id=user_id)
+        
+        # تحقق من الكود
+        reset_code = PasswordResetCode.objects.get(user=user)
+        if reset_code.code != code:
+            return Response({"error": "Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # لو الكود صح غيري كلمة السر
         user.set_password(new_password)
         user.save()
+        
+        # ممكن تحذفي الكود بعد الاستخدام
+        reset_code.delete()
+        
         return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    except PasswordResetCode.DoesNotExist:
+        return Response({"error": "Verification code not found."}, status=status.HTTP_404_NOT_FOUND)
+
+from rest_framework import generics
+
+# لقراءة وإنشاء المهامfrom rest_framework.views import APIView
+
+class TaskList(APIView):
+    def get(self, request, format=None):
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TaskDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return None
+
+    def get(self, request, pk, format=None):
+        task = self.get_object(pk)
+        if task:
+            serializer = TaskSerializer(task)
+            return Response(serializer.data)
+        return Response({"error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        task = self.get_object(pk)
+        if task:
+            serializer = TaskSerializer(task, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        task = self.get_object(pk)
+        if task:
+            task.delete()
+            return Response({"message": "Deleted successfully!"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"error": "not found!"}, status=status.HTTP_404_NOT_FOUND)

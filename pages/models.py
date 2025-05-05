@@ -59,9 +59,9 @@ class Child(models.Model):
 # Task
 class Task(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE, related_name='tasks', default=1)
-    datetime = models.DateTimeField(default=datetime.now)
     content = models.TextField(null=True)
-    def __str__(self): return f"Task for {self.child} on {self.datetime}"
+   
+
 
 # HowTo
 class HowTo(models.Model):
@@ -84,3 +84,12 @@ class GrowthRecord(models.Model):
 
     def __str__(self):
         return f"Growth record for {self.child} on {self.datetime}"
+
+#أولاً: نحتاج مكان نحفظ فيه الكود
+class PasswordResetCode(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.email} - {self.code}'

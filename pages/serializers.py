@@ -197,13 +197,10 @@ from rest_framework.authtoken.models import Token as AuthToken
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
-# Create serializer for Task
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['task_name', 'task_description', 'due_date', 'status']
-
+        fields = ['id', 'child','content']
 
 # Create serializer for GrowthRecord
 class GrowthRecordSerializer(serializers.ModelSerializer):
@@ -221,17 +218,6 @@ class PrChildSerializer(serializers.Serializer):
     type = serializers.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')])
     birth_date = serializers.DateField()
 
-
-import re
-from rest_framework import serializers
-from django.contrib.auth.models import User
-from .models import Mother
-
-
-import re
-from rest_framework import serializers
-from django.contrib.auth.models import User
-from .models import Mother
 
 class MotherSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField()

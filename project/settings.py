@@ -24,6 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-!20pb9b#@8kotda#8@x189-kleco^6stc^n0icz+^vbzw*38)8'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'marwabakry284@gmail.com'  # ضع هنا بريدك الإلكتروني
+EMAIL_HOST_PASSWORD = '5512m3rw3'  # ضع هنا كلمة مرور التطبيق الخاصة بك
+DEFAULT_FROM_EMAIL = 'marwabakry284@gmail.com'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 #ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
@@ -134,6 +142,15 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # لو الـ frontend بيشتغل على بورت 3000 مثلاً
     #"http://yourfrontenddomain.com",  # لو فيه نطاق خارجي
+]
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
 ]
 
 
