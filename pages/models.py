@@ -37,15 +37,9 @@ class Mother(models.Model):
 
 # ✅ بعد كده: تعريف Child
 class Child(models.Model):
-    Type = (
-        ('male', 'Male'),
-        ('female', 'Female'),
-    )
-    
+   
     mother = models.ForeignKey(Mother, on_delete=models.CASCADE, related_name='children', null=True)
     baby = models.CharField(max_length=190, null=True) 
-    birth_date = models.DateField(null=True, blank=True)
-    type = models.CharField(max_length=200, null=True, choices=Type)
     feedings = models.CharField(max_length=190, null=True) 
     sleeping = models.CharField(max_length=190, null=True) 
     Diapers = models.CharField(max_length=190, null=True)
@@ -56,6 +50,22 @@ class Child(models.Model):
     def __str__(self):
         return self.baby
 
+class preChild(models.Model):
+    GENDER_CHOICES = (
+        ('male', 'Male'),
+        ('female', 'Female'),
+    )
+
+    mother = models.ForeignKey(
+        'Mother',
+        on_delete=models.CASCADE,
+        related_name='pre_children',
+        null=False
+    )
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=False)
+    birth_date = models.DateField(null=False)
+
+   
 # Task
 class Task(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE, related_name='tasks', default=1)

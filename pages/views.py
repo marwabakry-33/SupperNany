@@ -80,45 +80,45 @@ def current_user(request):
         serializer = MotherSerializer(mother)
         return Response(serializer.data)
     
-    
+
 class PreRegisterChildAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         serializer = PrChildSerializer(data=request.data)
         if serializer.is_valid():
-            # إنشاء كائن Child جديد في قاعدة البيانات
-            child = Child.objects.create(
-                type=serializer.validated_data['type'],
+            try:
+                # الحصول على الأم المرتبطة بالمستخدم الحالي
+                mother = Mother.objects.get(user=request.user)
+            except Mother.DoesNotExist:
+                return Response({"error": "Mother not found for this user"}, status=status.HTTP_404_NOT_FOUND)
+
+            # إنشاء الطفل مع ربطه بالأم
+            child = preChild.objects.create(
+                mother=mother,
+                gender=serializer.validated_data['gender'],
                 birth_date=serializer.validated_data['birth_date']
             )
-            
-            # تخزين البيانات في الـ session إذا كنت بحاجة لذلك
-            request.session['child_type'] = serializer.validated_data['type']
+
+            # اختياري: تخزين البيانات في session
+            request.session['child_gender'] = serializer.validated_data['gender']
             request.session['child_birth_date'] = str(serializer.validated_data['birth_date'])
-            
-            # إرسال الـ id مع البيانات في الاستجابة
+
             return Response({
                 'id': child.id,
-                'type': child.type,
+                'gender': child.gender,
                 'birth_date': child.birth_date,
-                'message': 'Child type and date have been successfully set'
+                'message': 'Child has been successfully registered and linked to mother'
             }, status=status.HTTP_201_CREATED)
         
-        # إذا كانت البيانات غير صالحة
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterChildAPIView(APIView):
     def post(self, request):
-        # جبنا البيانات من الجلسة
-        child_type = request.session.get('child_type')
-        birth_date = request.session.get('child_birth_date')
-
 
         # ضفناهم للبيانات اللي جاية من الواجهة
         data = request.data.copy()
-        if child_type and birth_date:
-            data['type'] = child_type
-            data['birth_date'] = birth_date
-
+      
         serializer = ChildSerializer(data=data)
         if serializer.is_valid():
             # تأكدي هنا إن الأم مرتبطة بالمستخدم (لو ده موجود عندك)
@@ -251,19 +251,24 @@ class TaskList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TaskDetail(APIView):
-    def get_object(self, pk):
+    def get_object(self,pk):
         try:
-            return Task.objects.get(pk=pk)
+            return Task.objects.get(id=pk)
+        except Task.DoesNotExist:
+            return None
+    def get_tasks_for_child(self, child_id):
+        try:
+            # الحصول على جميع المهام الخاصة بالطفل
+            return Task.objects.filter(child__id=child_id)
         except Task.DoesNotExist:
             return None
 
-    def get(self, request, pk, format=None):
-        task = self.get_object(pk)
-        if task:
-            serializer = TaskSerializer(task)
+    def get(self, request, child_id, format=None):
+        tasks = self.get_tasks_for_child(child_id)
+        if tasks:
+            serializer = TaskSerializer(tasks, many=True)
             return Response(serializer.data)
-        return Response({"error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
-
+        return Response({"error": "No tasks found for the specified child!"}, status=status.HTTP_404_NOT_FOUND)
     def put(self, request, pk, format=None):
         task = self.get_object(pk)
         if task:

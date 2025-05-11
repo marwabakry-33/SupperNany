@@ -211,12 +211,12 @@ class GrowthRecordSerializer(serializers.ModelSerializer):
 class ChildSerializer(serializers.ModelSerializer):
     class Meta:
         model = Child
-        fields = ['baby', 'birth_date', 'type', 'feedings', 'sleeping', 'Diapers', 'weight', 'height', 'photo']
-
+        fields = ['baby', 'feedings', 'sleeping', 'Diapers', 'weight', 'height', 'photo']
 
 class PrChildSerializer(serializers.Serializer):
-    type = serializers.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')])
+    gender = serializers.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')])
     birth_date = serializers.DateField()
+
 
 
 class MotherSerializer(serializers.ModelSerializer):

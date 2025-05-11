@@ -11,6 +11,7 @@ admin.site.register(Task)
 admin.site.register(GrowthRecord)
 admin.site.register(HowTo)
 admin.site.register(AdviceMoon)
+admin.site.register(preChild)
 
 admin.site.register(AdviceBottel)
 
