@@ -285,3 +285,37 @@ class TaskDetail(APIView):
             task.delete()
             return Response({"message": "Deleted successfully!"}, status=status.HTTP_204_NO_CONTENT)
         return Response({"error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+import random
+
+from .models import AdviceBaby, AdviceMother, AdviceBad, AdviceBottel, AdviceMoon
+from .serializers import (
+    AdviceBabySerializer, AdviceMotherSerializer,
+    AdviceBadSerializer, BabyBottleAdviceSerializer, AdviceMoonSerializer
+)
+
+class RandomAdviceView(APIView):
+    def get(self, request, category):
+        model_map = {
+            'baby': (AdviceBaby, AdviceBabySerializer),
+            'mother': (AdviceMother, AdviceMotherSerializer),
+            'bad': (AdviceBad, AdviceBadSerializer),
+            'bottle': (AdviceBottel, BabyBottleAdviceSerializer),
+            'moon': (AdviceMoon, AdviceMoonSerializer),
+        }
+
+        if category not in model_map:
+            return Response({'error': 'Invalid category'}, status=status.HTTP_400_BAD_REQUEST)
+
+        model_class, serializer_class = model_map[category]
+        advice_list = model_class.objects.all()
+
+        if not advice_list.exists():
+            return Response({'message': f'No {category} advice found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        random_advice = random.choice(advice_list)
+        serializer = serializer_class(random_advice)
+        return Response(serializer.data)

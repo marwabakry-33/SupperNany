@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views  
 from django.contrib.auth import views as auth_views
-from .views import TaskList, TaskDetail
+from .views import*
 
 urlpatterns = [
     path('register/', views.register, name='register'),
@@ -18,6 +18,7 @@ urlpatterns = [
     path('task/',TaskList.as_view(), name='task'),
     path('tasks/<int:pk>/',TaskDetail.as_view(), name='task-detail'),  # لقراءة، تحديث وحذف مهمة معينة
     path('task/<int:child_id>/',TaskDetail.as_view(), name='task-list-for-child'),
+    path('advice/<str:category>/', RandomAdviceView.as_view(), name='random-advice'),
 
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]

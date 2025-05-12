@@ -214,6 +214,7 @@ class ChildSerializer(serializers.ModelSerializer):
         fields = ['baby', 'feedings', 'sleeping', 'Diapers', 'weight', 'height', 'photo']
 
 class PrChildSerializer(serializers.Serializer):
+    
     gender = serializers.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')])
     birth_date = serializers.DateField()
 
