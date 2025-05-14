@@ -68,9 +68,9 @@ class preChild(models.Model):
    
 # Task
 class Task(models.Model):
-    child = models.ForeignKey(Child, on_delete=models.CASCADE, related_name='tasks', default=1)
+    child = models.ForeignKey(preChild, on_delete=models.CASCADE, related_name='tasks')
     content = models.TextField(null=True)
-   
+
 
 
 # HowTo
