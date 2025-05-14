@@ -9,14 +9,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
 from rest_framework.views import APIView
-
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import MotherSerializer
 
 from rest_framework.authtoken.models import Token  # لازم تستورده
 from rest_framework_simplejwt.tokens import RefreshToken
-
 
 import random
 from django.core.mail import send_mail
@@ -113,6 +111,63 @@ class PreRegisterChildAPIView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class GetChildByIdAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, child_id):
+        try:
+            # التأكد إن الطفل ينتمي للأم الخاصة بالمستخدم الحالي
+            mother = Mother.objects.get(user=request.user)
+            child = preChild.objects.get(id=child_id, mother=mother)
+
+            serializer = PrChildSerializer(child)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except Mother.DoesNotExist:
+            return Response({'error': 'Mother not found'}, status=status.HTTP_404_NOT_FOUND)
+        except preChild.DoesNotExist:
+            return Response({'error': 'Child not found or does not belong to this mother'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def user_login(request):
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid():
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+
+            # نحاول نجيب الأم المرتبطة بالمستخدم
+            try:
+                mother = Mother.objects.get(user=user)
+                # نحاول نجيب الطفل الأول المرتبط بيها
+                child = preChild.objects.filter(mother=mother).first()
+                if child:
+                    child_data = {
+                        'id': child.id,
+                        'gender': child.gender,
+                        'birth_date': child.birth_date
+                    }
+                else:
+                    child_data = None
+            except Mother.DoesNotExist:
+                child_data = None
+
+            return Response({
+                'message': 'Login successful',
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                'user_id': user.id,
+                'username': user.username,
+                'child': child_data
+            }, status=status.HTTP_200_OK)
+        
+        return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class RegisterChildAPIView(APIView):
     def post(self, request):
 
@@ -147,26 +202,6 @@ def logout(request):
     request.user.auth_token.delete()
 
     return Response({'message': 'Logout successful'}, status=200)
-
-@api_view(['POST'])
-def user_login(request):
-    serializer = LoginSerializer(data=request.data)
-    if serializer.is_valid():
-        username = serializer.validated_data['username']
-        password = serializer.validated_data['password']
-
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'message': 'Login successful',
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-                'user_id': user.id,
-                'username': user.username
-            }, status=status.HTTP_200_OK)
-        return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

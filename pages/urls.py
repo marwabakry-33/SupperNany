@@ -2,6 +2,10 @@ from django.urls import path
 from . import views  
 from django.contrib.auth import views as auth_views
 from .views import*
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 urlpatterns = [
     path('register/', views.register, name='register'),
@@ -19,7 +23,12 @@ urlpatterns = [
     path('tasks/<int:pk>/',TaskDetail.as_view(), name='task-detail'),  # لقراءة، تحديث وحذف مهمة معينة
     path('task/<int:child_id>/',TaskDetail.as_view(), name='task-list-for-child'),
     path('advice/<str:category>/', RandomAdviceView.as_view(), name='random-advice'),
+    path('child/<int:child_id>/', GetChildByIdAPIView.as_view(), name='get_child_by_id'),
+    # تسجيل الدخول - يرجع Access و Refresh Token
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
 
+    # تحديث التوكن - يرجع Access جديد باستخدام Refresh
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]
 
