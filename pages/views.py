@@ -79,6 +79,8 @@ def current_user(request):
         return Response(serializer.data)
     
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
 class PreRegisterChildAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -86,27 +88,28 @@ class PreRegisterChildAPIView(APIView):
         serializer = PrChildSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                # الحصول على الأم المرتبطة بالمستخدم الحالي
                 mother = Mother.objects.get(user=request.user)
             except Mother.DoesNotExist:
                 return Response({"error": "Mother not found for this user"}, status=status.HTTP_404_NOT_FOUND)
 
-            # إنشاء الطفل مع ربطه بالأم
             child = preChild.objects.create(
                 mother=mother,
                 gender=serializer.validated_data['gender'],
                 birth_date=serializer.validated_data['birth_date']
             )
 
-            # اختياري: تخزين البيانات في session
-            request.session['child_gender'] = serializer.validated_data['gender']
-            request.session['child_birth_date'] = str(serializer.validated_data['birth_date'])
+            # توليد توكن للمستخدم الحالي
+            refresh = RefreshToken.for_user(request.user)
 
             return Response({
-                'id': child.id,
-                'gender': child.gender,
-                'birth_date': child.birth_date,
-                'message': 'Child has been successfully registered and linked to mother'
+                'child': {
+                    'id': child.id,
+                    'gender': child.gender,
+                    'birth_date': child.birth_date,
+                    'message': 'Child has been successfully registered and linked to mother'
+                },
+                'access': str(refresh.access_token),
+                'refresh': str(refresh)
             }, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
