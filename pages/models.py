@@ -21,8 +21,8 @@ class AdviceBad(models.Model):
     def __str__(self): return self.advice_bad
 
 class AdviceMother(models.Model):
-    advice_mather = models.CharField(max_length=200 ,null=True)
-    def __str__(self): return self.advice_mather
+    advice_mother = models.CharField(max_length=200 ,null=True)
+    def __str__(self): return self.advice_mother
 
 # تعريف نموذج Mother بدون حقل user
 class Mother(models.Model):
@@ -77,14 +77,7 @@ class Task(models.Model):
 class HowTo(models.Model):
     content = models.TextField(null=True)
     datetime = models.DateTimeField(default=datetime.now)
-    advice_moon = models.ForeignKey(AdviceMother, on_delete=models.SET_NULL, null=True, blank=True, related_name='howto_moon')
-    advice_bottle = models.ForeignKey(AdviceBaby, on_delete=models.SET_NULL, null=True, blank=True, related_name='howto_bottle')
-    advice_bad = models.ForeignKey(AdviceBad, on_delete=models.SET_NULL, null=True, blank=True, related_name='howto_bad')
-    advice_mother = models.ForeignKey(AdviceMother, on_delete=models.SET_NULL, null=True, blank=True, related_name='howto_mother')
-
-    def __str__(self):
-        return f"HowTo: {self.content[:30] if self.content else 'No content available'}..."
-
+    
 # GrowthRecord
 class GrowthRecord(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE, related_name='growth_records', default=1)
