@@ -197,12 +197,10 @@ from rest_framework.authtoken.models import Token as AuthToken
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 class TaskSerializer(serializers.ModelSerializer):
-    content_en = serializers.CharField()
-    content_ar = serializers.CharField()
-
+   
     class Meta:
         model = Task
-        fields = ['id', 'child', 'content', 'content_en', 'content_ar']
+        fields = ['id', 'child', 'content']
 
 # Create serializer for GrowthRecord
 class GrowthRecordSerializer(serializers.ModelSerializer):
