@@ -196,11 +196,13 @@ from rest_framework.authtoken.models import Token as AuthToken
 
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-
 class TaskSerializer(serializers.ModelSerializer):
+    content_en = serializers.CharField()
+    content_ar = serializers.CharField()
+
     class Meta:
         model = Task
-        fields = ['id', 'child','content']
+        fields = ['id', 'child', 'content', 'content_en', 'content_ar']
 
 # Create serializer for GrowthRecord
 class GrowthRecordSerializer(serializers.ModelSerializer):
@@ -290,29 +292,47 @@ class UserSerializer(serializers.ModelSerializer):
 
 # Create serializers for Advice models
 class AdviceBabySerializer(serializers.ModelSerializer):
+    advice_baby_ar = serializers.CharField(read_only=True)
+    advice_baby_en = serializers.CharField(read_only=True)
+
     class Meta:
         model = AdviceBaby
-        fields = '__all__'
+        fields = ['id', 'advice_baby', 'advice_baby_ar', 'advice_baby_en']
+
 
 class AdviceBadSerializer(serializers.ModelSerializer):
+    advice_bad_ar = serializers.CharField(read_only=True)
+    advice_bad_en = serializers.CharField(read_only=True)
+
     class Meta:
         model = AdviceBad
-        fields = '__all__'
+        fields = ['id', 'advice_bad', 'advice_bad_ar', 'advice_bad_en']
+
 
 class AdviceMotherSerializer(serializers.ModelSerializer):
+    advice_mother_ar = serializers.CharField(read_only=True)
+    advice_mother_en = serializers.CharField(read_only=True)
+
     class Meta:
         model = AdviceMother
-        fields = '__all__'
+        fields = ['id', 'advice_mother', 'advice_mother_ar', 'advice_mother_en']
 
 class BabyBottleAdviceSerializer(serializers.ModelSerializer):
+    advice_baby_ar = serializers.CharField(read_only=True)
+    advice_baby_en = serializers.CharField(read_only=True)
+
     class Meta:
         model = AdviceBottel
-        fields = '__all__'
+        fields = ['id', 'advice_baby', 'advice_baby_ar', 'advice_baby_en']
 
 class AdviceMoonSerializer(serializers.ModelSerializer):
+    advice_baby_ar = serializers.CharField(read_only=True)
+    advice_baby_en = serializers.CharField(read_only=True)
+
     class Meta:
         model = AdviceMoon
-        fields = '__all__'
+        fields = ['id', 'advice_baby', 'advice_baby_ar', 'advice_baby_en']
+
 
 # Serializer for HowTo
 class HowToSerializer(serializers.ModelSerializer):
