@@ -255,11 +255,11 @@ def ResetPasswordAPIView(request):
 class TaskList(APIView):
     def get(self, request, format=None):
         tasks = Task.objects.all()
-        serializer = TaskSerializer(tasks, many=True)
+        serializer = TaskSerializer(tasks, many=True, context={'request': request})  # ✅ أضفنا context
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = TaskSerializer(data=request.data)
+        serializer = TaskSerializer(data=request.data, context={'request': request})  # ✅ أضفنا context
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -281,13 +281,13 @@ class TaskDetail(APIView):
     def get(self, request, child_id, format=None):
         tasks = self.get_tasks_for_child(child_id)
         if tasks:
-            serializer = TaskSerializer(tasks, many=True)
+            serializer = TaskSerializer(tasks, many=True, context={'request': request})  # ✅ أضفنا context
             return Response(serializer.data)
         return Response({"error": _("No tasks found for the specified child!")}, status=status.HTTP_404_NOT_FOUND)
     def put(self, request, pk, format=None):
         task = self.get_object(pk)
         if task:
-            serializer = TaskSerializer(task, data=request.data)
+            serializer = TaskSerializer(task, data=request.data, context={'request': request})  # ✅ أضفنا context
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
