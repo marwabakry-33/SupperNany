@@ -21,6 +21,7 @@ from django.core.mail import send_mail
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import User, PasswordResetCode
+from django.utils.translation import gettext as _
 
 import logging
 logger = logging.getLogger(__name__)
@@ -37,16 +38,16 @@ def register(request):
     logger.info(f"Email: {email}")
 
     if not password or not isinstance(password, str):
-        return Response({"error":"Password must be a non-empty string."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": _("Password must be a non-empty string.")}, status=status.HTTP_400_BAD_REQUEST)
 
     if not confirm_password or not isinstance(confirm_password, str):
-        return Response({"error": "Confirm password must be a non-empty string."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": _("Confirm password must be a non-empty string.")}, status=status.HTTP_400_BAD_REQUEST)
 
     if password != confirm_password:
-        return Response({"error": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": _("Passwords do not match.")}, status=status.HTTP_400_BAD_REQUEST)
 
     if not email or not isinstance(email, str):
-        return Response({"error": "Email must be a non-empty string."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": _("Email must be a non-empty string.")}, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = MotherSerializer(data=request.data)
     if serializer.is_valid():
@@ -60,7 +61,7 @@ def register(request):
         mother_data = MotherSerializer(mother).data
 
         return Response({
-            "message": "Registration successful",
+            "message": _("Registration successful"),
             "access": access_token,
             "refresh": str(refresh),
             "mother": mother_data
@@ -79,7 +80,6 @@ def current_user(request):
         return Response(serializer.data)
     
 
-from rest_framework_simplejwt.tokens import RefreshToken
 
 class PreRegisterChildAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -90,7 +90,7 @@ class PreRegisterChildAPIView(APIView):
             try:
                 mother = Mother.objects.get(user=request.user)
             except Mother.DoesNotExist:
-                return Response({"error": "Mother not found for this user"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"error": _("Mother not found for this user")}, status=status.HTTP_404_NOT_FOUND)
 
             child = preChild.objects.create(
                 mother=mother,
@@ -106,7 +106,7 @@ class PreRegisterChildAPIView(APIView):
                     'id': child.id,
                     'gender': child.gender,
                     'birth_date': child.birth_date,
-                    'message': 'Child has been successfully registered and linked to mother'
+                    'message': _('Child has been successfully registered and linked to mother')
                 },
                 'access': str(refresh.access_token),
                 'refresh': str(refresh)
@@ -127,9 +127,9 @@ class GetChildByIdAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         except Mother.DoesNotExist:
-            return Response({'error': 'Mother not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': _('Mother not found')}, status=status.HTTP_404_NOT_FOUND)
         except preChild.DoesNotExist:
-            return Response({'error': 'Child not found or does not belong to this mother'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': _('Child not found or does not belong to this mother')}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
 def user_login(request):
@@ -159,7 +159,7 @@ def user_login(request):
                 child_data = None
 
             return Response({
-                'message': 'Login successful',
+                'message': _('Login successful'),
                 'access': str(refresh.access_token),
                 'refresh': str(refresh),
                 'user_id': user.id,
@@ -167,10 +167,9 @@ def user_login(request):
                 'child': child_data
             }, status=status.HTTP_200_OK)
         
-        return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'message': _('Invalid credentials')}, status=status.HTTP_401_UNAUTHORIZED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class RegisterChildAPIView(APIView):
     def post(self, request):
 
@@ -184,27 +183,6 @@ class RegisterChildAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
-def public_data_view(request):
-    context = {
-        'Advice Babies': AdviceBabySerializer(AdviceBaby.objects.all(), many=True).data,
-        'Advice Bads': AdviceBadSerializer(AdviceBad.objects.all(), many=True).data,
-        'Advice Mothers': AdviceMotherSerializer(AdviceMother.objects.all(), many=True).data,
-        'Advice Bottle': BabyBottleAdviceSerializer(AdviceBottel.objects.all(), many=True).data,
-        'Advice Moon': AdviceMoonSerializer(AdviceMoon.objects.all(), many=True).data,
-        'How To': HowToSerializer(HowTo.objects.all(), many=True).data,
-    }
-    return Response(context)
-from django.views.decorators.csrf import csrf_exempt
-
-@csrf_exempt
-@api_view(['POST'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def logout(request):
-    request.user.auth_token.delete()
-
-    return Response({'message': 'Logout successful'}, status=200)
 
 
 @api_view(['POST'])
@@ -271,7 +249,6 @@ def ResetPasswordAPIView(request):
     except PasswordResetCode.DoesNotExist:
         return Response({"error": "Verification code not found."}, status=status.HTTP_404_NOT_FOUND)
 
-from rest_framework import generics
 
 # لقراءة وإنشاء المهامfrom rest_framework.views import APIView
 
@@ -306,7 +283,7 @@ class TaskDetail(APIView):
         if tasks:
             serializer = TaskSerializer(tasks, many=True)
             return Response(serializer.data)
-        return Response({"error": "No tasks found for the specified child!"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": _("No tasks found for the specified child!")}, status=status.HTTP_404_NOT_FOUND)
     def put(self, request, pk, format=None):
         task = self.get_object(pk)
         if task:
@@ -315,25 +292,15 @@ class TaskDetail(APIView):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": _("Task not found!")}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk, format=None):
         task = self.get_object(pk)
         if task:
             task.delete()
-            return Response({"message": "Deleted successfully!"}, status=status.HTTP_204_NO_CONTENT)
-        return Response({"error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": _("Deleted successfully!")}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"error": _("Task not found!")}, status=status.HTTP_404_NOT_FOUND)
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-import random
-
-from .models import AdviceBaby, AdviceMother, AdviceBad, AdviceBottel, AdviceMoon
-from .serializers import (
-    AdviceBabySerializer, AdviceMotherSerializer,
-    AdviceBadSerializer, BabyBottleAdviceSerializer, AdviceMoonSerializer
-)
 
 class RandomAdviceView(APIView):
     def get(self, request, category):
@@ -346,13 +313,13 @@ class RandomAdviceView(APIView):
         }
 
         if category not in model_map:
-            return Response({'error': 'Invalid category'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': _("Invalid category")}, status=status.HTTP_400_BAD_REQUEST)
 
         model_class, serializer_class = model_map[category]
         advice_list = model_class.objects.all()
 
         if not advice_list.exists():
-            return Response({'message': f'No {category} advice found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': _(f'No {category} advice found.')}, status=status.HTTP_404_NOT_FOUND)
 
         random_advice = random.choice(advice_list)
         serializer = serializer_class(random_advice)

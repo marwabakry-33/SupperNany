@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os 
 from datetime import timedelta
+from django.utils.translation import gettext_lazy as _
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,12 +56,14 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework_simplejwt',
     'corsheaders',
+    'modeltranslation'
 ]
 
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -70,6 +75,15 @@ MIDDLEWARE = [
     
 ]
 
+LANGUAGE_CODE = 'en'  # اللغة الافتراضية
+
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
 ROOT_URLCONF = 'project.urls'
 
 TEMPLATES = [
@@ -88,18 +102,21 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'project.wsgi.application'
 
+WSGI_APPLICATION = 'project.wsgi.application'
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
 
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+BASE_DIR = Path(__file__).resolve().parent.parent
 
+# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 REST_FRAMEWORK = {
     
