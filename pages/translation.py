@@ -16,7 +16,7 @@ class AdviceBadTranslationOptions(TranslationOptions):
     fields = ('advice_bad',)
 
 class AdviceMotherTranslationOptions(TranslationOptions):
-    fields = ('advice_mother',)
+    fields = ('advice_mather',)
 
 class ChildTranslationOptions(TranslationOptions):
     fields = ('baby', 'feedings', 'sleeping', 'Diapers',)

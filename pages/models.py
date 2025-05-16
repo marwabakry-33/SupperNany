@@ -21,8 +21,8 @@ class AdviceBad(models.Model):
     def __str__(self): return self.advice_bad
 
 class AdviceMother(models.Model):
-    advice_mother = models.CharField(max_length=200 ,null=True)
-    def __str__(self): return self.advice_mother
+    advice_mather = models.CharField(max_length=200 ,null=True)
+    def __str__(self): return self.advice_mather
 
 # تعريف نموذج Mother بدون حقل user
 class Mother(models.Model):
