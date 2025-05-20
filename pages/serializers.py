@@ -145,9 +145,13 @@ class AdviceMoonSerializer(serializers.ModelSerializer):
 
 # Serializer for HowTo
 class HowToSerializer(serializers.ModelSerializer):
+    
+    content_ar = serializers.CharField(read_only=True)
+    content_en = serializers.CharField(read_only=True)
+    
     class Meta:
         model = HowTo
-        fields = '__all__'
+        fields = ['id','content','content_ar','content_en']
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()

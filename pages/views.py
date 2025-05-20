@@ -7,19 +7,10 @@ from rest_framework import status
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from .serializers import MotherSerializer
-
-from rest_framework.authtoken.models import Token  # لازم تستورده
 from rest_framework_simplejwt.tokens import RefreshToken
-
 import random
 from django.core.mail import send_mail
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from .models import User, PasswordResetCode
 from django.utils.translation import gettext as _
 
@@ -324,3 +315,9 @@ class RandomAdviceView(APIView):
         random_advice = random.choice(advice_list)
         serializer = serializer_class(random_advice)
         return Response(serializer.data)
+
+from rest_framework import generics
+
+class HowToListView(generics.ListAPIView):
+    queryset = HowTo.objects.all()
+    serializer_class = HowToSerializer

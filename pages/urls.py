@@ -30,6 +30,8 @@ urlpatterns = [
     # تحديث التوكن - يرجع Access جديد باستخدام Refresh
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('how-to/', HowToListView.as_view(), name='how_to_list'),
+
 ]
 
 

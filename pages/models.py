@@ -76,7 +76,7 @@ class Task(models.Model):
 # HowTo
 class HowTo(models.Model):
     content = models.TextField(null=True)
-    datetime = models.DateTimeField(default=datetime.now)
+    def __str__(self): return self.content
     
 # GrowthRecord
 class GrowthRecord(models.Model):
