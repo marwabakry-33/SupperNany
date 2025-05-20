@@ -152,7 +152,7 @@ class HowToSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HowTo
-        fields = ['id', 'category', 'content', 'advice_id']
+        fields = ['id', 'category', 'content', 'content_ar', 'content_en', 'advice_id']
 
     def get_content_ar(self, obj):
         try:
