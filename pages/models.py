@@ -75,9 +75,20 @@ class Task(models.Model):
 
 # HowTo
 class HowTo(models.Model):
-    content = models.TextField(null=True)
-    def __str__(self): return self.content
-    
+    category = models.CharField(max_length=20, choices=[
+        ('mother', 'Mother'),
+        ('baby', 'Baby'),
+        ('bad', 'Bad'),
+        ('bottle', 'Bottle'),
+        ('moon', 'Moon'),
+    ])
+
+  
+    content = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.category} - {self.content[:30]}"
+
 # GrowthRecord
 class GrowthRecord(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE, related_name='growth_records', default=1)

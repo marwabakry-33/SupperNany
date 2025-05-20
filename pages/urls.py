@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from .views import HowToByCategoryView
 
 urlpatterns = [
     path('register/', views.register, name='register'),
@@ -30,7 +31,7 @@ urlpatterns = [
     # تحديث التوكن - يرجع Access جديد باستخدام Refresh
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    path('how-to/', HowToListView.as_view(), name='how_to_list'),
+    path('howto/<str:category>/', HowToByCategoryView.as_view(), name='howto-by-category'),
 
 ]
 

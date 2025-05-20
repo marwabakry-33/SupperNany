@@ -318,6 +318,14 @@ class RandomAdviceView(APIView):
 
 from rest_framework import generics
 
-class HowToListView(generics.ListAPIView):
-    queryset = HowTo.objects.all()
+
+class HowToByCategoryView(generics.ListCreateAPIView):  # بدل ListAPIView
     serializer_class = HowToSerializer
+
+    def get_queryset(self):
+        category = self.kwargs.get('category')
+        return HowTo.objects.filter(category=category)
+
+    def perform_create(self, serializer):
+        category = self.kwargs.get('category')
+        serializer.save(category=category)

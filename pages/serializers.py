@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token as AuthToken
 
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+import json
 class TaskSerializer(serializers.ModelSerializer):
    
     class Meta:
@@ -145,14 +146,38 @@ class AdviceMoonSerializer(serializers.ModelSerializer):
 
 # Serializer for HowTo
 class HowToSerializer(serializers.ModelSerializer):
-    
-    content_ar = serializers.CharField(read_only=True)
-    content_en = serializers.CharField(read_only=True)
-    
+    content_ar = serializers.SerializerMethodField()
+    content_en = serializers.SerializerMethodField()
+    advice_id = serializers.IntegerField(write_only=True, required=False)
+
     class Meta:
         model = HowTo
-        fields = ['id','content','content_ar','content_en']
+        fields = ['id', 'category', 'content', 'content_ar', 'content_en', 'advice_id']
 
+    def get_content_ar(self, obj):
+        try:
+            content_json = json.loads(obj.content)
+            return content_json.get("ar", "")
+        except Exception:
+            return ""
+
+    def get_content_en(self, obj):
+        try:
+            content_json = json.loads(obj.content)
+            return content_json.get("en", "")
+        except Exception:
+            return ""
+
+    def create(self, validated_data):
+        advice_id = validated_data.pop('advice_id', None)
+        if advice_id:
+            from .models import Advice  # تأكدي إن Advice مستوردة بشكل صحيح
+            advice = Advice.objects.filter(id=advice_id).first()
+            if advice:
+                validated_data['advice'] = advice
+        return super().create(validated_data)
+
+  
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
