@@ -161,19 +161,27 @@ def user_login(request):
         return Response({'message': _('Invalid credentials')}, status=status.HTTP_401_UNAUTHORIZED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from rest_framework.permissions import IsAuthenticated
+
 class RegisterChildAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
+        user = request.user
 
-        # ضفناهم للبيانات اللي جاية من الواجهة
-        data = request.data.copy()
-      
-        serializer = ChildSerializer(data=data)
+        # تأكد إن المستخدم مرتبط بأم
+        try:
+            mother = user.mother
+        except Mother.DoesNotExist:
+            return Response({"detail": "هذا المستخدم غير مرتبط بأي أم."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = ChildSerializer(data=request.data)
+
         if serializer.is_valid():
-            # تأكدي هنا إن الأم مرتبطة بالمستخدم (لو ده موجود عندك)
-            serializer.save(mother=request.user.mother)
+            serializer.save(mother=mother)  # ربط الطفل بالأم من الباك
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

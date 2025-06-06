@@ -18,9 +18,6 @@ class AdviceBadTranslationOptions(TranslationOptions):
 class AdviceMotherTranslationOptions(TranslationOptions):
     fields = ('advice_mather',)
 
-class ChildTranslationOptions(TranslationOptions):
-    fields = ('baby', 'feedings', 'sleeping', 'Diapers',)
-
 class HowToTranslationOptions(TranslationOptions):
     fields = ('content',)
 
@@ -30,5 +27,4 @@ translator.register(AdviceMoon, AdviceMoonTranslationOptions)
 translator.register(AdviceBottel, AdviceBottelTranslationOptions)
 translator.register(AdviceBad, AdviceBadTranslationOptions)
 translator.register(AdviceMother, AdviceMotherTranslationOptions)
-translator.register(Child, ChildTranslationOptions)
 translator.register(HowTo, HowToTranslationOptions)

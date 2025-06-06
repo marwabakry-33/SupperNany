@@ -23,7 +23,7 @@ class GrowthRecordSerializer(serializers.ModelSerializer):
 class ChildSerializer(serializers.ModelSerializer):
     class Meta:
         model = Child
-        fields = ['baby', 'feedings', 'sleeping', 'Diapers', 'weight', 'height', 'photo']
+        exclude = ['mother']  # ما نخليش الأم جزء من البيانات القادمة من الواجهة
 
 class PrChildSerializer(serializers.Serializer):
     
