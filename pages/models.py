@@ -40,9 +40,9 @@ class Child(models.Model):
    
     mother = models.ForeignKey(Mother, on_delete=models.CASCADE, related_name='children', null=True)
     baby = models.CharField(max_length=190, null=True) 
-    feedings = models.CharField(max_length=190, null=True) 
-    sleeping = models.CharField(max_length=190, null=True) 
-    Diapers = models.CharField(max_length=190, null=True)
+    feedings = models.FloatField(null=False, default=0.0) 
+    sleeping = models.FloatField(null=False, default=0.0)
+    Diapers = models.FloatField(null=False, default=0.0)
     weight = models.FloatField(null=False, default=0.0)
     height = models.FloatField(null=False, default=0.0)
     photo = models.ImageField(blank=True, null=True, default="super.png")
