@@ -39,7 +39,6 @@ class Mother(models.Model):
 class Child(models.Model):
    
     mother = models.ForeignKey(Mother, on_delete=models.CASCADE, related_name='children', null=True)
-    baby = models.CharField(max_length=190, null=True) 
     feedings = models.FloatField(null=False, default=0.0) 
     sleeping = models.FloatField(null=False, default=0.0)
     Diapers = models.FloatField(null=False, default=0.0)
@@ -60,6 +59,23 @@ class preChild(models.Model):
         related_name='pre_children',
         null=False
     )
+
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=False)
+    birth_date = models.DateField(null=False)
+
+class preChild2(models.Model):
+    GENDER_CHOICES = (
+        ('male', 'Male'),
+        ('female', 'Female'),
+    )
+
+    mother = models.ForeignKey(
+        'Mother',
+        on_delete=models.CASCADE,
+        related_name='pre_children2',
+        null=False
+    )
+    baby =  models.CharField(max_length=190, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=False)
     birth_date = models.DateField(null=False)
 

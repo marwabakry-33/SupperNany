@@ -105,6 +105,41 @@ class PreRegisterChildAPIView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class PreRegisterChildAPIView2(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = PrChildSerializer2(data=request.data)
+        if serializer.is_valid():
+            try:
+                mother = Mother.objects.get(user=request.user)
+            except Mother.DoesNotExist:
+                return Response({"error": _("Mother not found for this user")}, status=status.HTTP_404_NOT_FOUND)
+
+            child = preChild2.objects.create(
+                mother=mother,
+                baby=serializer.validated_data['baby'],
+                gender=serializer.validated_data['gender'],
+                birth_date=serializer.validated_data['birth_date']
+            )
+
+            # توليد توكن للمستخدم الحالي
+            refresh = RefreshToken.for_user(request.user)
+
+            return Response({
+                'child': {
+                    'id': child.id,
+                    'baby':child.baby,
+                    'gender': child.gender,
+                    'birth_date': child.birth_date,
+                    'message': _('Child has been successfully registered and linked to mother')
+                },
+                'access': str(refresh.access_token),
+                'refresh': str(refresh)
+            }, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class GetChildByIdAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -112,14 +147,14 @@ class GetChildByIdAPIView(APIView):
         try:
             # التأكد إن الطفل ينتمي للأم الخاصة بالمستخدم الحالي
             mother = Mother.objects.get(user=request.user)
-            child = preChild.objects.get(id=child_id, mother=mother)
+            child = preChild2.objects.get(id=child_id, mother=mother)
 
-            serializer = PrChildSerializer(child)
+            serializer = PrChildSerializer2(child)
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         except Mother.DoesNotExist:
             return Response({'error': _('Mother not found')}, status=status.HTTP_404_NOT_FOUND)
-        except preChild.DoesNotExist:
+        except preChild2.DoesNotExist:
             return Response({'error': _('Child not found or does not belong to this mother')}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
@@ -137,10 +172,11 @@ def user_login(request):
             try:
                 mother = Mother.objects.get(user=user)
                 # نحاول نجيب الطفل الأول المرتبط بيها
-                child = preChild.objects.filter(mother=mother).first()
+                child = preChild2.objects.filter(mother=mother).first()
                 if child:
                     child_data = {
                         'id': child.id,
+                        'baby':child.baby,
                         'gender': child.gender,
                         'birth_date': child.birth_date
                     }
@@ -322,14 +358,6 @@ class TaskDetail(APIView):
             return Response({"message": _("Deleted successfully!")}, status=status.HTTP_204_NO_CONTENT)
         return Response({"error": _("Task not found!")}, status=status.HTTP_404_NOT_FOUND)
 
-class FavoriteTasksForChild(APIView):
-    def get(self, request, child_id, format=None):
-        tasks = Task.objects.filter(child__id=child_id, is_favorite=True)
-        if tasks.exists():
-            serializer = TaskSerializer(tasks, many=True, context={'request': request})
-            return Response(serializer.data)
-        return Response({"error": _("No favorite tasks found!")}, status=status.HTTP_404_NOT_FOUND)
-
 
 class RandomAdviceView(APIView):
     def get(self, request, category):
@@ -353,6 +381,13 @@ class RandomAdviceView(APIView):
         random_advice = random.choice(advice_list)
         serializer = serializer_class(random_advice)
         return Response(serializer.data)
+class FavoriteTasksForChild(APIView):
+    def get(self, request, child_id, format=None):
+        tasks = Task.objects.filter(child__id=child_id, is_favorite=True)
+        if tasks.exists():
+            serializer = TaskSerializer(tasks, many=True, context={'request': request})
+            return Response(serializer.data)
+        return Response({"error": _("No favorite tasks found!")}, status=status.HTTP_404_NOT_FOUND)
 
 from rest_framework import generics
 

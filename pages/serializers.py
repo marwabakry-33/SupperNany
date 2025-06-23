@@ -9,10 +9,10 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 import json
 class TaskSerializer(serializers.ModelSerializer):
+   
     class Meta:
         model = Task
-        fields = ['id', 'child', 'content', 'is_favorite']  # ✅ أضفنا is_favorite
-
+        fields = ['id', 'child', 'content','is_favorite'] 
 
 # Create serializer for GrowthRecord
 class GrowthRecordSerializer(serializers.ModelSerializer):
@@ -53,6 +53,10 @@ class PrChildSerializer(serializers.Serializer):
     gender = serializers.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')])
     birth_date = serializers.DateField()
 
+class PrChildSerializer2(serializers.Serializer):
+    baby = serializers.CharField()
+    gender = serializers.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')])
+    birth_date = serializers.DateField()
 
 
 class MotherSerializer(serializers.ModelSerializer):
