@@ -47,9 +47,7 @@ class Child(models.Model):
     height = models.FloatField(null=False, default=0.0)
     photo = models.ImageField(blank=True, null=True, default="super.png")
 
-    def __str__(self):
-        return self.baby
-
+   
 class preChild(models.Model):
     GENDER_CHOICES = (
         ('male', 'Male'),
@@ -70,6 +68,7 @@ class preChild(models.Model):
 class Task(models.Model):
     child = models.ForeignKey(preChild, on_delete=models.CASCADE, related_name='tasks')
     content = models.TextField(null=True)
+    is_favorite = models.BooleanField(default=False)  # ✅ حقل المفضلة الجديد
 
 
 
@@ -86,9 +85,7 @@ class HowTo(models.Model):
   
     content = models.TextField(null=True, blank=True)
 
-    def __str__(self):
-        return f"{self.category} - {self.content[:30]}"
-
+  
 # GrowthRecord
 class GrowthRecord(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE, related_name='growth_records', default=1)

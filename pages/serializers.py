@@ -9,10 +9,10 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 import json
 class TaskSerializer(serializers.ModelSerializer):
-   
     class Meta:
         model = Task
-        fields = ['id', 'child', 'content']
+        fields = ['id', 'child', 'content', 'is_favorite']  # ✅ أضفنا is_favorite
+
 
 # Create serializer for GrowthRecord
 class GrowthRecordSerializer(serializers.ModelSerializer):
@@ -20,10 +20,33 @@ class GrowthRecordSerializer(serializers.ModelSerializer):
         model = GrowthRecord
         fields = ['record_date', 'weight', 'height', 'head_circumference']
 # Create serializer for Child
+
+from django.utils.translation import gettext as _
+
 class ChildSerializer(serializers.ModelSerializer):
+    feedings_status = serializers.SerializerMethodField()
+    sleeping_status = serializers.SerializerMethodField()
+    diapers_status = serializers.SerializerMethodField()
+
     class Meta:
         model = Child
-        exclude = ['mother']  # ما نخليش الأم جزء من البيانات القادمة من الواجهة
+        exclude = ['mother']
+        read_only_fields = ['feedings_status', 'sleeping_status', 'diapers_status']
+
+    def get_feedings_status(self, obj):
+        return _("normal") if 5 <= obj.feedings <= 8 else _("unnormal")
+
+    def get_sleeping_status(self, obj):
+        return _("normal") if 10 <= obj.sleeping <= 14 else _("unnormal")
+
+    def get_diapers_status(self, obj):
+        return _("normal") if 4 <= obj.Diapers <= 6 else _("unnormal")
+
+    def validate(self, data):
+        for field in ['feedings', 'sleeping', 'Diapers']:
+            if data.get(field) is not None and data[field] < 0:
+                raise serializers.ValidationError(f"{field} لا يمكن أن تكون سالبة.")
+        return data
 
 class PrChildSerializer(serializers.Serializer):
     
@@ -87,7 +110,7 @@ class MotherSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'password']  # بدون الأطفال
+        fields = ['email', 'first_name', 'last_name', 'password'] 
         extra_kwargs = {
             'password': {'write_only': True}  # حتى لا يظهر الباسورد في الرد
         }

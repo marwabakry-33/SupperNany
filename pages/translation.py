@@ -21,6 +21,8 @@ class AdviceMotherTranslationOptions(TranslationOptions):
 class HowToTranslationOptions(TranslationOptions):
     fields = ('content',)
 
+
+
 # سجل التعريفات في ال Translator
 translator.register(AdviceBaby, AdviceBabyTranslationOptions)
 translator.register(AdviceMoon, AdviceMoonTranslationOptions)

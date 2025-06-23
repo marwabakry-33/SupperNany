@@ -182,7 +182,29 @@ class RegisterChildAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# داله ل edit for child
+class UpdateChildAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def put(self, request, pk):
+        user = request.user
+        try:
+            mother = user.mother
+        except Mother.DoesNotExist:
+            return Response({"detail": "هذا المستخدم غير مرتبط بأي أم."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            child = Child.objects.get(pk=pk, mother=mother)
+        except Child.DoesNotExist:
+            return Response({"detail": "هذا الطفل غير موجود أو لا يتبع هذه الأم."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ChildSerializer(child, data=request.data, partial=True)  # partial=True يسمح بتعديل جزئي
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def RequestPasswordResetAPIView(request):
@@ -299,6 +321,14 @@ class TaskDetail(APIView):
             task.delete()
             return Response({"message": _("Deleted successfully!")}, status=status.HTTP_204_NO_CONTENT)
         return Response({"error": _("Task not found!")}, status=status.HTTP_404_NOT_FOUND)
+
+class FavoriteTasksForChild(APIView):
+    def get(self, request, child_id, format=None):
+        tasks = Task.objects.filter(child__id=child_id, is_favorite=True)
+        if tasks.exists():
+            serializer = TaskSerializer(tasks, many=True, context={'request': request})
+            return Response(serializer.data)
+        return Response({"error": _("No favorite tasks found!")}, status=status.HTTP_404_NOT_FOUND)
 
 
 class RandomAdviceView(APIView):

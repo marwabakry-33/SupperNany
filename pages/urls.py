@@ -12,6 +12,8 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('pre-register-child/', views.PreRegisterChildAPIView.as_view(), name='pre-register-child'),
     path('register-child/', views.RegisterChildAPIView.as_view(), name='register-child'),  
+    path('child/<int:pk>/update/', UpdateChildAPIView.as_view(), name='update_child'),
+
     path('userinfo', views.current_user, name='userinfo'),
     #path('public_data/',views.public_data_view, name='public_data'),
     path('login/', views.user_login, name='login'),
@@ -23,6 +25,8 @@ urlpatterns = [
     path('task/',TaskList.as_view(), name='task'),
     path('tasks/<int:pk>/',TaskDetail.as_view(), name='task-detail'),  # لقراءة، تحديث وحذف مهمة معينة
     path('task/<int:child_id>/',TaskDetail.as_view(), name='task-list-for-child'),
+    path('tasks/favorite/<int:child_id>/', FavoriteTasksForChild.as_view(), name='favorite_tasks'),
+
     path('advice/<str:category>/', RandomAdviceView.as_view(), name='random-advice'),
     path('child/<int:child_id>/', GetChildByIdAPIView.as_view(), name='get_child_by_id'),
     # تسجيل الدخول - يرجع Access و Refresh Token

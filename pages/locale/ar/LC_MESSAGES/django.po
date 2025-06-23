@@ -1,0 +1,86 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-23 19:12+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+#: .\serializers.py:37 .\serializers.py:40 .\serializers.py:43
+msgid "normal"
+msgstr "طبيعي"
+#: .\serializers.py:37 .\serializers.py:40 .\serializers.py:43
+msgid "unnormal"
+msgstr "غير طبيعي"
+
+#: .\views.py:32
+msgid "Password must be a non-empty string."
+msgstr ""
+
+#: .\views.py:35
+msgid "Confirm password must be a non-empty string."
+msgstr ""
+
+#: .\views.py:38
+msgid "Passwords do not match."
+msgstr ""
+
+#: .\views.py:41
+msgid "Email must be a non-empty string."
+msgstr ""
+
+#: .\views.py:55
+msgid "Registration successful"
+msgstr ""
+
+#: .\views.py:84
+msgid "Mother not found for this user"
+msgstr ""
+
+#: .\views.py:100
+msgid "Child has been successfully registered and linked to mother"
+msgstr ""
+
+#: .\views.py:121
+msgid "Mother not found"
+msgstr ""
+
+#: .\views.py:123
+msgid "Child not found or does not belong to this mother"
+msgstr ""
+
+#: .\views.py:153
+msgid "Login successful"
+msgstr ""
+
+#: .\views.py:161
+msgid "Invalid credentials"
+msgstr ""
+
+#: .\views.py:295
+msgid "No tasks found for the specified child!"
+msgstr ""
+
+#: .\views.py:304 .\views.py:311
+msgid "Task not found!"
+msgstr ""
+
+#: .\views.py:310
+msgid "Deleted successfully!"
+msgstr ""
+
+#: .\views.py:325
+msgid "Invalid category"
+msgstr ""

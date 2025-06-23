@@ -41,6 +41,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['marwabakry23.pythonanywhere.com','localhost', '127.0.0.1', '0.0.0.0']
 #'localhost', '127.0.0.1', '0.0.0.0', 
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 WSGI_APPLICATION = 'project.wsgi.application'
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
@@ -78,8 +81,19 @@ MIDDLEWARE = [
 
     
 ]
+USE_I18N = True
 
-LANGUAGE_CODE = 'en'  # اللغة الافتراضية
+LANGUAGES = [
+    ('en', 'English'),
+    ('ar', 'Arabic'),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+
+
+LANGUAGE_CODE = 'ar'  # اللغة الافتراضية
 
 USE_I18N = True
 USE_L10N = True
