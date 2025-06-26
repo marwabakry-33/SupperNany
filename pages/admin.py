@@ -13,6 +13,7 @@ admin.site.register(GrowthRecord)
 admin.site.register(HowTo)
 admin.site.register(AdviceMoon)
 admin.site.register(preChild2)
+admin.site.register(ChildPhoto)
 
 admin.site.register(AdviceBottel)
 
