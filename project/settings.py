@@ -151,9 +151,10 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': (
         'rest_framework_simplejwt.tokens.AccessToken',
-        'rest_framework_simplejwt.tokens.RefreshToken',  # أضيفي هذا السطر
+        'rest_framework_simplejwt.tokens.RefreshToken',
     ),
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
