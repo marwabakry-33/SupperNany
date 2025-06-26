@@ -44,7 +44,7 @@ class Child(models.Model):
     Diapers = models.FloatField(null=False, default=0.0)
     weight = models.FloatField(null=False, default=0.0)
     height = models.FloatField(null=False, default=0.0)
-    photo = models.ImageField(blank=True, null=True, default="super.png")
+    photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
 
    
 class preChild(models.Model):

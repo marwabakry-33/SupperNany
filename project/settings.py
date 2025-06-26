@@ -40,9 +40,11 @@ DEBUG = False
 #ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 ALLOWED_HOSTS = ['marwabakry23.pythonanywhere.com']
 #'localhost', '127.0.0.1', '0.0.0.0', 
+import os
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 
 WSGI_APPLICATION = 'project.wsgi.application'
