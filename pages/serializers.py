@@ -48,10 +48,7 @@ class ChildSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"{field} لا يمكن أن تكون سالبة.")
         return data
 
-class PrChildSerializer(serializers.Serializer):
-    
-    gender = serializers.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')])
-    birth_date = serializers.DateField()
+
 
 class PrChildSerializer2(serializers.Serializer):
     baby = serializers.CharField()

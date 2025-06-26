@@ -72,38 +72,6 @@ def current_user(request):
     
 
 
-class PreRegisterChildAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        serializer = PrChildSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                mother = Mother.objects.get(user=request.user)
-            except Mother.DoesNotExist:
-                return Response({"error": _("Mother not found for this user")}, status=status.HTTP_404_NOT_FOUND)
-
-            child = preChild.objects.create(
-                mother=mother,
-                gender=serializer.validated_data['gender'],
-                birth_date=serializer.validated_data['birth_date']
-            )
-
-            # توليد توكن للمستخدم الحالي
-            refresh = RefreshToken.for_user(request.user)
-
-            return Response({
-                'child': {
-                    'id': child.id,
-                    'gender': child.gender,
-                    'birth_date': child.birth_date,
-                    'message': _('Child has been successfully registered and linked to mother')
-                },
-                'access': str(refresh.access_token),
-                'refresh': str(refresh)
-            }, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PreRegisterChildAPIView2(APIView):
     permission_classes = [IsAuthenticated]

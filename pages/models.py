@@ -47,21 +47,7 @@ class Child(models.Model):
     photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
 
    
-class preChild(models.Model):
-    GENDER_CHOICES = (
-        ('male', 'Male'),
-        ('female', 'Female'),
-    )
 
-    mother = models.ForeignKey(
-        'Mother',
-        on_delete=models.CASCADE,
-        related_name='pre_children',
-        null=False
-    )
-
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=False)
-    birth_date = models.DateField(null=False)
 
 class preChild2(models.Model):
     GENDER_CHOICES = (
@@ -82,7 +68,7 @@ class preChild2(models.Model):
    
 # Task
 class Task(models.Model):
-    child = models.ForeignKey(preChild, on_delete=models.CASCADE, related_name='tasks')
+    child = models.ForeignKey(preChild2, on_delete=models.CASCADE, related_name='tasks')
     content = models.TextField(null=True)
     is_favorite = models.BooleanField(default=False)  # ✅ حقل المفضلة الجديد
 
