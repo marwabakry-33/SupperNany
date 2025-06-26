@@ -73,7 +73,7 @@ msgid "Invalid category"
 msgstr "فئه غير صالحه"
 
 #: .\views.py:XXX
-msgid "updated successfully"
+msgid "updated successfully."
 msgstr "تم التحديث بنجاح"
 
 #. Context: gender – Male
