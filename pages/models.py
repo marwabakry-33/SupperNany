@@ -42,12 +42,16 @@ class Child(models.Model):
     feedings = models.FloatField(null=False, default=0.0) 
     sleeping = models.FloatField(null=False, default=0.0)
     Diapers = models.FloatField(null=False, default=0.0)
-    weight = models.FloatField(null=False, default=0.0)
-    height = models.FloatField(null=False, default=0.0)
-    temp = models.FloatField(null=True, blank=True)  # درجة الحرارة
+    # weight = models.FloatField(null=False, default=0.0)
+    # height = models.FloatField(null=False, default=0.0)
+    # temp = models.FloatField(null=True, blank=True)  # درجة الحرارة
+    # photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
+
+class ChildPhoto(models.Model):
+    child = models.ForeignKey('Child', on_delete=models.CASCADE, related_name='photos')
     photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
 
-
+   
 
 class preChild2(models.Model):
     GENDER_CHOICES = (

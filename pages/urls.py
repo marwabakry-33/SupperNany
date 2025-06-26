@@ -10,7 +10,12 @@ from .views import HowToByCategoryView
 
 urlpatterns = [
     path('register/', views.register, name='register'),
+   
     path('pre-register-child2/', views.PreRegisterChildAPIView2.as_view(), name='pre-register-child2'),
+    
+    path('api/child/<int:child_id>/upload-photo/', upload_child_photo),
+    path('child/<int:child_id>/photo/', get_child_photo, name='get_child_photo'),
+    path('child/<int:child_id>/photo/update/', update_child_photo, name='update_child_photo'),
 
     path('register-child/', views.RegisterChildAPIView.as_view(), name='register-child'),  
     path('child/<int:pk>/update/', UpdateChildAPIView.as_view(), name='update_child'),
