@@ -46,9 +46,8 @@ class Child(models.Model):
     # height = models.FloatField(null=False, default=0.0)
     # temp = models.FloatField(null=True, blank=True)  # درجة الحرارة
     # photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
-
 class ChildPhoto(models.Model):
-    child = models.ForeignKey('Child', on_delete=models.CASCADE, related_name='photos')
+    child = models.OneToOneField(Child, on_delete=models.CASCADE, related_name='photo')
     photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
 
    
