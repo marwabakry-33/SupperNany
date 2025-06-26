@@ -69,8 +69,33 @@ def current_user(request):
         # استخدام Serializer لعرض بيانات الأم مع الأطفال
         serializer = MotherSerializer(mother)
         return Response(serializer.data)
-    
 
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_mother_profile(request):
+    try:
+        mother = Mother.objects.get(user=request.user)
+    except Mother.DoesNotExist:
+        return Response({"error": "الأم غير موجودة."}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = MotherUpdateSerializer(mother, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        
+        # تحديث الإيميل في User نفسه لو اتغير
+        if 'email' in request.data:
+            request.user.username = request.data['email']
+            request.user.email = request.data['email']
+            request.user.save()
+        
+        return Response({
+            "message": "تم تحديث البيانات بنجاح.",
+            "mother": serializer.data
+        }, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PreRegisterChildAPIView2(APIView):

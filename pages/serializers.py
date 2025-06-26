@@ -27,11 +27,13 @@ class ChildSerializer(serializers.ModelSerializer):
     feedings_status = serializers.SerializerMethodField()
     sleeping_status = serializers.SerializerMethodField()
     diapers_status = serializers.SerializerMethodField()
+    temperature_status = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Child
         exclude = ['mother']
-        read_only_fields = ['feedings_status', 'sleeping_status', 'diapers_status']
+        read_only_fields = ['feedings_status', 'sleeping_status', 'diapers_status', 'temperature_status']
 
     def get_feedings_status(self, obj):
         return _("normal") if 5 <= obj.feedings <= 8 else _("unnormal")
@@ -41,6 +43,11 @@ class ChildSerializer(serializers.ModelSerializer):
 
     def get_diapers_status(self, obj):
         return _("normal") if 4 <= obj.Diapers <= 6 else _("unnormal")
+    
+    def get_temperature_status(self, obj):
+        if obj.temp is None:
+            return None
+        return _("normal") if 36.5 <= obj.temp <= 37.5 else _("unnormal")
 
     def validate(self, data):
         for field in ['feedings', 'sleeping', 'Diapers']:
@@ -48,6 +55,10 @@ class ChildSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"{field} لا يمكن أن تكون سالبة.")
         return data
 
+class MotherUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mother
+        fields = ['first_name', 'last_name', 'email']
 
 
 class PrChildSerializer2(serializers.Serializer):

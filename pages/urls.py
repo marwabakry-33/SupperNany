@@ -16,6 +16,8 @@ urlpatterns = [
     path('child/<int:pk>/update/', UpdateChildAPIView.as_view(), name='update_child'),
 
     path('userinfo', views.current_user, name='userinfo'),
+    path('api/update-mother/', views.update_mother_profile, name='update_mother'),
+
     #path('public_data/',views.public_data_view, name='public_data'),
     path('login/', views.user_login, name='login'),
     # طلب إعادة تعيين كلمة المرور (طلب البريد الإلكتروني)

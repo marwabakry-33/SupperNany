@@ -37,16 +37,16 @@ class Mother(models.Model):
 
 # ✅ بعد كده: تعريف Child
 class Child(models.Model):
-   
+    
     mother = models.ForeignKey(Mother, on_delete=models.CASCADE, related_name='children', null=True)
     feedings = models.FloatField(null=False, default=0.0) 
     sleeping = models.FloatField(null=False, default=0.0)
     Diapers = models.FloatField(null=False, default=0.0)
     weight = models.FloatField(null=False, default=0.0)
     height = models.FloatField(null=False, default=0.0)
+    temp = models.FloatField(null=True, blank=True)  # درجة الحرارة
     photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
 
-   
 
 
 class preChild2(models.Model):
