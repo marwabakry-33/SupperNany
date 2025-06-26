@@ -91,7 +91,7 @@ def update_mother_profile(request):
             request.user.save()
         
         return Response({
-            "message": "تم تحديث البيانات بنجاح.",
+            "message": "updated successfully.",
             "mother": serializer.data
         }, status=status.HTTP_200_OK)
 
@@ -446,4 +446,4 @@ def update_child_photo(request, child_id):
         # لو ماكانش فيه صورة قبل كده، نعمل واحدة جديدة
         ChildPhoto.objects.create(child=child, photo=photo_file)
 
-    return Response({"message": "تم تحديث الصورة بنجاح"}, status=200)
+    return Response({"message": "Updated Successful"}, status=200)

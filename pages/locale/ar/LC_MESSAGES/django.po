@@ -25,10 +25,6 @@ msgstr "طبيعي"
 msgid "unnormal"
 msgstr "غير طبيعي"
 
-#: .\views.py:32
-msgid "Password must be a non-empty string."
-msgstr ""
-
 #: .\views.py:35
 msgid "Confirm password must be a non-empty string."
 msgstr ""
@@ -53,34 +49,93 @@ msgstr ""
 msgid "Child has been successfully registered and linked to mother"
 msgstr ""
 
-#: .\views.py:121
-msgid "Mother not found"
-msgstr ""
 
-#: .\views.py:123
-msgid "Child not found or does not belong to this mother"
-msgstr ""
 
 #: .\views.py:153
 msgid "Login successful"
-msgstr ""
+msgstr "تسجيل دخول بنجاح"
 
 #: .\views.py:161
 msgid "Invalid credentials"
 msgstr ""
 
-#: .\views.py:295
-msgid "No tasks found for the specified child!"
-msgstr ""
 
 #: .\views.py:304 .\views.py:311
 msgid "Task not found!"
-msgstr ""
+msgstr "المهمه غير موجوده"
 
 #: .\views.py:310
 msgid "Deleted successfully!"
-msgstr ""
+msgstr "تم حذف بنجاح"
 
 #: .\views.py:325
 msgid "Invalid category"
-msgstr ""
+msgstr "فئه غير صالحه"
+
+#: .\views.py:XXX
+msgid "Updated successfully"
+msgstr "تم التحديث بنجاح"
+
+#. Context: gender – Male
+msgctxt "gender"
+msgid "Male"
+msgstr "ذكر"
+
+#. Context: gender – Female
+msgctxt "gender"
+msgid "Female"
+msgstr "أنثى"
+
+
+#: .\views.py:XX
+msgid "هذا المستخدم غير مرتبط بأي أم."
+msgstr "This user is not linked to any mother."
+
+#: .\views.py:YY
+msgid "Mother not found"
+msgstr "لم يتم العثور على الأم"
+
+#: .\views.py:ZZ
+msgid "Child not found or does not belong to this mother"
+msgstr "الطفل غير موجود أو لا يتبع هذه الأم"
+
+#: .\views.py:BB
+msgid "Email not found"
+msgstr "البريد الإلكتروني غير موجود"
+
+#: .\views.py:CC
+msgid "Verification code sent to your email."
+msgstr "تم إرسال رمز التحقق إلى بريدك الإلكتروني."
+
+#: .\views.py:DD
+msgid "User not found"
+msgstr "المستخدم غير موجود"
+
+#: .\views.py:EE
+msgid "Verification code not found."
+msgstr "رمز التحقق غير موجود"
+
+#: .\views.py:FF
+msgid "Password has been reset successfully."
+msgstr "تم إعادة تعيين كلمة المرور بنجاح."
+
+#: .\views.py:GG
+msgid "No tasks found for the specified child!"
+msgstr "لا توجد مهام لهذا الطفل المحدد!"
+
+
+#: .\views.py:JJ
+msgid "No favorite tasks found!"
+msgstr "لا توجد مهام مفضلة!"
+
+#: .\views.py:KK
+msgid "Photo uploaded successfully."
+msgstr "تم رفع الصورة بنجاح."
+
+#: .\views.py:LL
+msgid "لا توجد صورة لهذا الطفل"
+msgstr "No photo found for this child."
+
+#: .\views.py:MM
+msgid "تم تحديث الصورة بنجاح"
+msgstr "Photo updated successfully."
