@@ -198,19 +198,24 @@ class RegisterChildAPIView(APIView):
     def post(self, request):
         user = request.user
 
-        # تأكد إن المستخدم مرتبط بأم
+        # 1. جلب سجل preChild2 عبر request
+        pre_id = request.data.get('pre_id')
+        if not pre_id:
+            return Response({"error": "يرجى إرسال pre_id المرتبط بالطفل."}, status=400)
+
         try:
-            mother = user.mother
-        except Mother.DoesNotExist:
-            return Response({"detail": "هذا المستخدم غير مرتبط بأي أم."}, status=status.HTTP_400_BAD_REQUEST)
+            pre = preChild2.objects.get(id=pre_id, mother__user=user)
+        except preChild2.DoesNotExist:
+            return Response({"error": "preChild2 غير موجود أو ليس بمالِك الأم."}, status=404)
 
+        # 2. استعمل ChildSerializer، مع ربط pre والأم
         serializer = ChildSerializer(data=request.data)
-
         if serializer.is_valid():
-            serializer.save(mother=mother)  # ربط الطفل بالأم من الباك
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save(mother=user.mother, pre=pre)
+            return Response(serializer.data, status=201)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=400)
+
 # داله ل edit for child
 class UpdateChildAPIView(APIView):
     permission_classes = [IsAuthenticated]

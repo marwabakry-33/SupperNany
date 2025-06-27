@@ -34,24 +34,6 @@ class Mother(models.Model):
     def __str__(self):
         return self.first_name
 
-
-# ✅ بعد كده: تعريف Child
-class Child(models.Model):
-    
-    mother = models.ForeignKey(Mother, on_delete=models.CASCADE, related_name='children', null=True)
-    feedings = models.FloatField(null=False, default=0.0) 
-    sleeping = models.FloatField(null=False, default=0.0)
-    Diapers = models.FloatField(null=False, default=0.0)
-    # weight = models.FloatField(null=False, default=0.0)
-    # height = models.FloatField(null=False, default=0.0)
-    # temp = models.FloatField(null=True, blank=True)  # درجة الحرارة
-    # photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
-class ChildPhoto(models.Model):
-    child = models.OneToOneField(Child, on_delete=models.CASCADE, related_name='photo')
-    photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
-
-   
-
 class preChild2(models.Model):
     GENDER_CHOICES = (
         ('male', 'Male'),
@@ -67,6 +49,39 @@ class preChild2(models.Model):
     baby =  models.CharField(max_length=190, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=False)
     birth_date = models.DateField(null=False)
+
+# ✅ بعد كده: تعريف Child
+class Child(models.Model):
+    pre = models.OneToOneField(
+        preChild2,
+        on_delete=models.CASCADE,
+        related_name='child',
+        null=True,
+        blank=True
+    )
+    feedings = models.FloatField(default=0.0)
+    sleeping = models.FloatField(default=0.0)
+    Diapers = models.FloatField(default=0.0)
+
+    mother = models.ForeignKey(Mother, on_delete=models.CASCADE, related_name='children', null=True)
+    
+    # weight = models.FloatField(null=False, default=0.0)
+    # height = models.FloatField(null=False, default=0.0)
+    # temp = models.FloatField(null=True, blank=True)  # درجة الحرارة
+    # photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
+class ChildPhoto(models.Model):
+    pre = models.OneToOneField(
+        preChild2,
+        on_delete=models.CASCADE,
+        related_name='photo',
+        null=True,       # يسمح بحقل فارغ في قاعدة البيانات
+        blank=True 
+        )# يسمح بحقل فارغ في واجهات الإدخال (admin أو forms)
+
+    photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
+
+   
+
 
    
 # Task

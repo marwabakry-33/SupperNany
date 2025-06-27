@@ -62,10 +62,10 @@ class MotherUpdateSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'email']
 
 
-class PrChildSerializer2(serializers.Serializer):
-    baby = serializers.CharField()
-    gender = serializers.ChoiceField(choices=[('male', 'Male'), ('female', 'Female')])
-    birth_date = serializers.DateField()
+class PrChildSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = preChild2
+        fields = ['id', 'baby', 'gender', 'birth_date']
 
 
 class MotherSerializer(serializers.ModelSerializer):
