@@ -192,13 +192,31 @@ def user_login(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 from rest_framework.permissions import IsAuthenticated
 
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from .models import Child
+from .serializers import ChildSerializer
+
 class RegisterChildAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        # التأكد أن المستخدم لديه أم مرتبطة
+        if not hasattr(user, 'mother'):
+            return Response({"error": "لا يوجد ملف أم مرتبط بهذا المستخدم."}, status=404)
+
+        # جلب الأطفال المرتبطين بالأم
+        children = Child.objects.filter(mother=user.mother)
+
+        serializer = ChildSerializer(children, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         user = request.user
 
-        # 1. جلب سجل preChild2 عبر request
         pre_id = request.data.get('pre_id')
         if not pre_id:
             return Response({"error": "يرجى إرسال pre_id المرتبط بالطفل."}, status=400)
@@ -208,7 +226,6 @@ class RegisterChildAPIView(APIView):
         except preChild2.DoesNotExist:
             return Response({"error": "preChild2 غير موجود أو ليس بمالِك الأم."}, status=404)
 
-        # 2. استعمل ChildSerializer، مع ربط pre والأم
         serializer = ChildSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(mother=user.mother, pre=pre)
