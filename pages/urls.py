@@ -44,7 +44,8 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('howto/<str:category>/', HowToByCategoryView.as_view(), name='howto-by-category'),
-
+    path('child/<int:child_id>/growth/', create_growth_record, name='create_growth_record'),
+    path('child/<int:child_id>/growth/view/', get_growth_records, name='get_growth_records'),
 ]
 
 

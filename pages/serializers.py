@@ -14,12 +14,12 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ['id', 'child', 'content','is_favorite'] 
 
-# Create serializer for GrowthRecord
+# serializers.py
+
 class GrowthRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrowthRecord
-        fields = ['record_date', 'weight', 'height', 'head_circumference']
-# Create serializer for Child
+        fields = ['id', 'child', 'weight', 'height', 'date']
 
 from django.utils.translation import gettext as _
 

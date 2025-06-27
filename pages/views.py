@@ -473,3 +473,30 @@ def update_child_photo(request, child_id):
         ChildPhoto.objects.create(pre=pre, photo=photo_file)
 
     return Response({"message": "تم التحديث بنجاح"}, status=200)
+
+# views.py
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_growth_record(request, child_id):
+    try:
+        child = Child.objects.get(id=child_id, mother__user=request.user)
+    except Child.DoesNotExist:
+        return Response({'error': 'الطفل غير موجود أو غير مرتبط بهذه الأم.'}, status=404)
+
+    serializer = GrowthRecordSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(child=child)
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_growth_records(request, child_id):
+    try:
+        child = Child.objects.get(id=child_id, mother__user=request.user)
+    except Child.DoesNotExist:
+        return Response({'error': 'الطفل غير موجود أو غير مرتبط بهذه الأم.'}, status=404)
+
+    records = GrowthRecord.objects.filter(child=child).order_by('date')
+    serializer = GrowthRecordSerializer(records, many=True)
+    return Response(serializer.data)

@@ -75,7 +75,15 @@ class ChildPhoto(models.Model):
 
     photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
 
-   
+from django.db import models
+
+# models.py
+
+class GrowthRecord(models.Model):
+    child = models.ForeignKey('preChild2', on_delete=models.CASCADE, related_name='growth_records')
+    weight = models.FloatField(null=True, blank=True)  # الوزن بالكيلو
+    height = models.FloatField(null=True, blank=True)  # الطول بالسنتيمتر
+    date = models.DateField(default=timezone.now)  # تاريخ القياس
 
 
    
@@ -101,15 +109,6 @@ class HowTo(models.Model):
     content = models.TextField(null=True, blank=True)
 
   
-# GrowthRecord
-class GrowthRecord(models.Model):
-    child = models.ForeignKey(Child, on_delete=models.CASCADE, related_name='growth_records', default=1)
-    weight = models.FloatField(null=False, default=0.0)
-    height = models.FloatField(null=False, default=0.0)
-    datetime = models.DateTimeField(default=datetime.now)
-
-    def __str__(self):
-        return f"Growth record for {self.child} on {self.datetime}"
 
 #أولاً: نحتاج مكان نحفظ فيه الكود
 class PasswordResetCode(models.Model):
