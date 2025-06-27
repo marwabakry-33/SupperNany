@@ -52,13 +52,8 @@ class preChild2(models.Model):
 
 # ✅ بعد كده: تعريف Child
 class Child(models.Model):
-    pre = models.OneToOneField(
-        preChild2,
-        on_delete=models.CASCADE,
-        related_name='child',
-        null=True,
-        blank=True
-    )
+    pre = models.OneToOneField(preChild2, on_delete=models.CASCADE, null=True, blank=True)
+
     feedings = models.FloatField(default=0.0)
     sleeping = models.FloatField(default=0.0)
     Diapers = models.FloatField(default=0.0)

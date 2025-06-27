@@ -424,14 +424,15 @@ class HowToByCategoryView(generics.ListCreateAPIView):  # بدل ListAPIView
 def upload_child_photo(request, child_id):
     try:
         child = Child.objects.get(id=child_id, mother__user=request.user)
-    except Child.DoesNotExist:
-        return Response({"error": "Child not found."}, status=404)
+        pre = child.pre  # استخدام pre المرتبط بالطفل
+    except (Child.DoesNotExist, preChild2.DoesNotExist):
+        return Response({"error": "Child or related preChild2 not found."}, status=404)
 
     photo = request.FILES.get('photo')
     if not photo:
         return Response({"error": "No photo provided."}, status=400)
 
-    ChildPhoto.objects.create(child=child, photo=photo)
+    ChildPhoto.objects.create(pre=pre, photo=photo)
     return Response({"message": "Photo uploaded successfully."})
 
 @api_view(['GET'])
@@ -439,9 +440,12 @@ def upload_child_photo(request, child_id):
 def get_child_photo(request, child_id):
     try:
         child = Child.objects.get(id=child_id, mother__user=request.user)
-        photo = ChildPhoto.objects.get(child=child)
+        pre = child.pre
+        photo = ChildPhoto.objects.get(pre=pre)
     except Child.DoesNotExist:
         return Response({"error": "الطفل غير موجود"}, status=404)
+    except preChild2.DoesNotExist:
+        return Response({"error": "لا يوجد سجل pre للطفل"}, status=404)
     except ChildPhoto.DoesNotExist:
         return Response({"error": "لا توجد صورة لهذا الطفل"}, status=404)
 
@@ -453,19 +457,19 @@ def get_child_photo(request, child_id):
 def update_child_photo(request, child_id):
     try:
         child = Child.objects.get(id=child_id, mother__user=request.user)
-    except Child.DoesNotExist:
-        return Response({"error": "الطفل غير موجود"}, status=404)
+        pre = child.pre
+    except (Child.DoesNotExist, preChild2.DoesNotExist):
+        return Response({"error": "الطفل غير موجود أو pre غير متوفر"}, status=404)
 
     photo_file = request.FILES.get('photo')
     if not photo_file:
         return Response({"error": "يجب توفير صورة"}, status=400)
 
     try:
-        photo_obj = ChildPhoto.objects.get(child=child)
+        photo_obj = ChildPhoto.objects.get(pre=pre)
         photo_obj.photo = photo_file
         photo_obj.save()
     except ChildPhoto.DoesNotExist:
-        # لو ماكانش فيه صورة قبل كده، نعمل واحدة جديدة
-        ChildPhoto.objects.create(child=child, photo=photo_file)
+        ChildPhoto.objects.create(pre=pre, photo=photo_file)
 
-    return Response({"message": "Updated Successful"}, status=200)
+    return Response({"message": "تم التحديث بنجاح"}, status=200)
