@@ -19,7 +19,7 @@ class TaskSerializer(serializers.ModelSerializer):
 class GrowthRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrowthRecord
-        fields = ['id', 'child', 'weight', 'height', 'date']
+        fields = ['id', 'weight', 'height', 'date']  # حذفنا 'child'
 
 from django.utils.translation import gettext as _
 
