@@ -150,6 +150,12 @@ class GetChildByIdAPIView(APIView):
         except preChild2.DoesNotExist:
             return Response({'error': _('Child not found or does not belong to this mother')}, status=status.HTTP_404_NOT_FOUND)
 
+import os
+from django.conf import settings
+from .models import Child, ChildPhoto, preChild2, Mother
+
+LAST_USER_FILE = os.path.join(settings.BASE_DIR, 'last_user.txt')
+
 @api_view(['POST'])
 def user_login(request):
     serializer = LoginSerializer(data=request.data)
@@ -159,17 +165,42 @@ def user_login(request):
 
         user = authenticate(username=username, password=password)
         if user is not None:
+            # 🔁 قراءة آخر مستخدم
+            last_user_id = None
+            if os.path.exists(LAST_USER_FILE):
+                with open(LAST_USER_FILE, 'r') as f:
+                    last_user_id = f.read().strip()
+
+            # 🔁 حذف صور الطفل لو اليوزر اتغير
+            if last_user_id and str(user.id) != last_user_id:
+                try:
+                    prev_mother = Mother.objects.get(user_id=last_user_id)
+                    prev_children = preChild2.objects.filter(mother=prev_mother)
+                    for child in prev_children:
+                        try:
+                            photo = ChildPhoto.objects.get(pre=child)
+                            if photo.photo and os.path.isfile(photo.photo.path):
+                                os.remove(photo.photo.path)
+                            photo.delete()
+                        except ChildPhoto.DoesNotExist:
+                            pass
+                except Mother.DoesNotExist:
+                    pass
+
+            # ✏️ تحديث last_user_id
+            with open(LAST_USER_FILE, 'w') as f:
+                f.write(str(user.id))
+
             refresh = RefreshToken.for_user(user)
 
-            # نحاول نجيب الأم المرتبطة بالمستخدم
+            # 📌 جلب بيانات الطفل المرتبط بالأم الحالية
             try:
                 mother = Mother.objects.get(user=user)
-                # نحاول نجيب الطفل الأول المرتبط بيها
                 child = preChild2.objects.filter(mother=mother).first()
                 if child:
                     child_data = {
                         'id': child.id,
-                        'baby':child.baby,
+                        'baby': child.baby,
                         'gender': child.gender,
                         'birth_date': child.birth_date
                     }
@@ -179,7 +210,7 @@ def user_login(request):
                 child_data = None
 
             return Response({
-                'message': _('Login successful'),
+                'message': 'Login successful',
                 'access': str(refresh.access_token),
                 'refresh': str(refresh),
                 'user_id': user.id,
@@ -187,9 +218,10 @@ def user_login(request):
                 'child': child_data
             }, status=status.HTTP_200_OK)
         
-        return Response({'message': _('Invalid credentials')}, status=status.HTTP_401_UNAUTHORIZED)
-    
+        return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework.response import Response
