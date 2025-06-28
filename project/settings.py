@@ -36,7 +36,7 @@ EMAIL_HOST_PASSWORD = '5512m3rw3'  # ضع هنا كلمة مرور التطبي�
 DEFAULT_FROM_EMAIL = 'marwabakry284@gmail.com'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 #ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 ALLOWED_HOSTS = ['marwabakry23.pythonanywhere.com','localhost', '127.0.0.1', '0.0.0.0']
 #'localhost', '127.0.0.1', '0.0.0.0', 

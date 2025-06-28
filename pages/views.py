@@ -501,3 +501,24 @@ def get_growth_records(request, child_id):
     records = GrowthRecord.objects.filter(child=child).order_by('date')
     serializer = GrowthRecordSerializer(records, many=True)
     return Response(serializer.data)
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def update_growth_record(request, child_id, record_id):
+    try:
+        # التأكد من ملكية الطفل
+        child = preChild2.objects.get(id=child_id, mother__user=request.user)
+    except preChild2.DoesNotExist:
+        return Response({'error': 'الطفل غير موجود أو غير مرتبط بهذه الأم.'}, status=404)
+
+    try:
+        # التأكد من أن سجل النمو يتبع نفس الطفل
+        record = GrowthRecord.objects.get(id=record_id, child=child)
+    except GrowthRecord.DoesNotExist:
+        return Response({'error': 'سجل النمو غير موجود لهذا الطفل.'}, status=404)
+
+    serializer = GrowthRecordSerializer(record, data=request.data, partial=True)  # partial=True يسمح بالتحديث الجزئي
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=200)
+    return Response(serializer.errors, status=400)
