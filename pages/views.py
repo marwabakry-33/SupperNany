@@ -165,49 +165,43 @@ def user_login(request):
 
         user = authenticate(username=username, password=password)
         if user is not None:
-            # 🔁 قراءة آخر مستخدم
-            last_user_id = None
-            if os.path.exists(LAST_USER_FILE):
-                with open(LAST_USER_FILE, 'r') as f:
-                    last_user_id = f.read().strip()
-
-            # 🔁 حذف صور الطفل لو اليوزر اتغير
-            if last_user_id and str(user.id) != last_user_id:
-                try:
-                    prev_mother = Mother.objects.get(user_id=last_user_id)
-                    prev_children = preChild2.objects.filter(mother=prev_mother)
-                    for child in prev_children:
-                        try:
-                            photo = ChildPhoto.objects.get(pre=child)
-                            if photo.photo and os.path.isfile(photo.photo.path):
-                                os.remove(photo.photo.path)
-                            photo.delete()
-                        except ChildPhoto.DoesNotExist:
-                            pass
-                except Mother.DoesNotExist:
-                    pass
-
-            # ✏️ تحديث last_user_id
-            with open(LAST_USER_FILE, 'w') as f:
-                f.write(str(user.id))
-
-            refresh = RefreshToken.for_user(user)
-
-            # 📌 جلب بيانات الطفل المرتبط بالأم الحالية
+            # ✅ جلب بيانات الأم والطفل الحالي
             try:
                 mother = Mother.objects.get(user=user)
                 child = preChild2.objects.filter(mother=mother).first()
-                if child:
-                    child_data = {
-                        'id': child.id,
-                        'baby': child.baby,
-                        'gender': child.gender,
-                        'birth_date': child.birth_date
-                    }
-                else:
-                    child_data = None
             except Mother.DoesNotExist:
-                child_data = None
+                child = None
+
+            # ✅ جلب آخر preChild2.id من ملف مؤقت
+            last_child_id = None
+            if os.path.exists(LAST_CHILD_FILE):
+                with open(LAST_CHILD_FILE, 'r') as f:
+                    last_child_id = f.read().strip()
+
+            # 🔁 حذف الصورة لو الطفل اتغير
+            if child and last_child_id and str(child.id) != last_child_id:
+                try:
+                    photo = ChildPhoto.objects.get(pre_id=last_child_id)
+                    if photo.photo and os.path.isfile(photo.photo.path):
+                        os.remove(photo.photo.path)
+                    photo.delete()
+                except ChildPhoto.DoesNotExist:
+                    pass
+
+            # ✏️ تحديث رقم الطفل الحالي
+            if child:
+                with open(LAST_CHILD_FILE, 'w') as f:
+                    f.write(str(child.id))
+
+            # 🎟️ إنشاء التوكن
+            refresh = RefreshToken.for_user(user)
+
+            child_data = {
+                'id': child.id,
+                'baby': child.baby,
+                'gender': child.gender,
+                'birth_date': child.birth_date
+            } if child else None
 
             return Response({
                 'message': 'Login successful',
@@ -217,7 +211,7 @@ def user_login(request):
                 'username': user.username,
                 'child': child_data
             }, status=status.HTTP_200_OK)
-        
+
         return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -236,7 +230,6 @@ class RegisterChildAPIView(APIView):
     def get(self, request):
         user = request.user
 
-        # التأكد أن المستخدم لديه أم مرتبطة
         if not hasattr(user, 'mother'):
             return Response({"error": "لا يوجد ملف أم مرتبط بهذا المستخدم."}, status=404)
 
@@ -456,7 +449,7 @@ class HowToByCategoryView(generics.ListCreateAPIView):  # بدل ListAPIView
 def upload_child_photo(request, child_id):
     try:
         child = Child.objects.get(id=child_id, mother__user=request.user)
-        pre = child.pre  # استخدام pre المرتبط بالطفل
+        pre = child.pre  
     except (Child.DoesNotExist, preChild2.DoesNotExist):
         return Response({"error": "Child or related preChild2 not found."}, status=404)
 
