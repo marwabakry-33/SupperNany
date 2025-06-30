@@ -50,7 +50,7 @@ class preChild2(models.Model):
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=False)
     birth_date = models.DateField(null=False)
 
-# ✅ بعد كده: تعريف Child
+
 class Child(models.Model):
     pre = models.OneToOneField(preChild2, on_delete=models.CASCADE, null=True, blank=True)
 
@@ -60,10 +60,6 @@ class Child(models.Model):
 
     mother = models.ForeignKey(Mother, on_delete=models.CASCADE, related_name='children', null=True)
     
-    # weight = models.FloatField(null=False, default=0.0)
-    # height = models.FloatField(null=False, default=0.0)
-    # temp = models.FloatField(null=True, blank=True)  # درجة الحرارة
-    # photo = models.ImageField(upload_to='child_photos/', blank=True, null=True)
 class ChildPhoto(models.Model):
     pre = models.OneToOneField(
         preChild2,

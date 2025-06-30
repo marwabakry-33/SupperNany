@@ -125,3 +125,16 @@ msgstr "لا توجد مهام مفضلة!"
 
 #~ msgid "تم تحديث الصورة بنجاح"
 #~ msgstr "Photo updated successfully."
+
+
+#~ msgid "Normal"
+#~ msgstr "طبيعي"
+
+#~ msgid "Unnormal"
+#~ msgstr "غير طبيعي"
+
+#~ msgid "Birth date not available"
+#~ msgstr "تاريخ الميلاد غير متوفر"
+
+#~ msgid "Data not available for this age"
+#~ msgstr "لا توجد بيانات كافية للعمر"

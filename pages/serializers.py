@@ -22,6 +22,9 @@ from datetime import date
 from rest_framework import serializers
 from datetime import date
 
+from rest_framework import serializers
+from django.utils.translation import gettext as _  # ✅ لإتاحة الترجمة
+
 class GrowthRecordSerializer(serializers.ModelSerializer):
     weight_status = serializers.SerializerMethodField()
     height_status = serializers.SerializerMethodField()
@@ -41,26 +44,27 @@ class GrowthRecordSerializer(serializers.ModelSerializer):
     def get_weight_status(self, obj):
         age_in_months = self.get_age_in_months(obj)
         if age_in_months is None:
-            return 'تاريخ الميلاد غير متوفر'
+            return _('Birth date not available')
 
         if age_in_months <= 12:
-            return 'Normal' if 2.5 <= obj.weight <= 10 else 'unnormal'
+            return _('Normal') if 2.5 <= obj.weight <= 10 else _('Unnormal')
         elif age_in_months <= 24:
-            return 'Normal' if 9 <= obj.weight <= 14 else 'unnormal'
+            return _('Normal') if 9 <= obj.weight <= 14 else _('Unnormal')
         else:
-            return 'لا توجد بيانات كافية للعمر'
+            return _('Data not available for this age')
 
     def get_height_status(self, obj):
         age_in_months = self.get_age_in_months(obj)
         if age_in_months is None:
-            return 'تاريخ الميلاد غير متوفر'
+            return _('Birth date not available')
 
         if age_in_months <= 12:
-            return "normal" if 45 <= obj.height <= 80 else "unnormal"
+            return _('Normal') if 45 <= obj.height <= 80 else _('Unnormal')
         elif age_in_months <= 24:
-            return "normal" if 75 <= obj.height <= 95 else "unnormal"
+            return _('Normal') if 75 <= obj.height <= 95 else _('Unnormal')
         else:
-            return 'لا توجد بيانات كافية للعمر'
+            return _('Data not available for this age')
+
 
 from django.utils.translation import gettext as _
 
