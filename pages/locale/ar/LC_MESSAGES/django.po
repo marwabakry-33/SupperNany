@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-23 19:12+0300\n"
+"POT-Creation-Date: 2025-07-01 00:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,124 +18,110 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
-#: .\serializers.py:37 .\serializers.py:40 .\serializers.py:43
+
+#: .\pages\serializers.py:79 .\pages\serializers.py:82
+#: .\pages\serializers.py:85
 msgid "normal"
 msgstr "طبيعي"
-#: .\serializers.py:37 .\serializers.py:40 .\serializers.py:43
+
+#: .\pages\serializers.py:79 .\pages\serializers.py:82
+#: .\pages\serializers.py:85
 msgid "unnormal"
 msgstr "غير طبيعي"
 
-#: .\views.py:35
+#: .\pages\views.py:32
+msgid "Password must be a non-empty string."
+msgstr ""
+
+#: .\pages\views.py:35
 msgid "Confirm password must be a non-empty string."
 msgstr ""
 
-#: .\views.py:38
+#: .\pages\views.py:38
 msgid "Passwords do not match."
 msgstr ""
 
-#: .\views.py:41
+#: .\pages\views.py:41
 msgid "Email must be a non-empty string."
 msgstr ""
 
-#: .\views.py:55
+#: .\pages\views.py:55
 msgid "Registration successful"
 msgstr ""
 
-#: .\views.py:84
+#: .\pages\views.py:110
 msgid "Mother not found for this user"
 msgstr ""
 
-#: .\views.py:100
+#: .\pages\views.py:128
 msgid "Child has been successfully registered and linked to mother"
 msgstr ""
 
-
-
-#: .\views.py:153
-msgid "Login successful"
-msgstr "تسجيل دخول بنجاح"
-
-#: .\views.py:161
-msgid "Invalid credentials"
-msgstr ""
-
-
-#: .\views.py:304 .\views.py:311
-msgid "Task not found!"
-msgstr "المهمه غير موجوده"
-
-#: .\views.py:310
-msgid "Deleted successfully!"
-msgstr "تم حذف بنجاح"
-
-#: .\views.py:325
-msgid "Invalid category"
-msgstr "فئه غير صالحه"
-
-#: .\views.py:XXX
-msgid "updated successfully."
-msgstr "تم التحديث بنجاح"
-
-#. Context: gender – Male
-msgctxt "gender"
-msgid "Male"
-msgstr "ذكر"
-
-#. Context: gender – Female
-msgctxt "gender"
-msgid "Female"
-msgstr "أنثى"
-
-
-#: .\views.py:XX
-msgid "هذا المستخدم غير مرتبط بأي أم."
-msgstr "This user is not linked to any mother."
-
-#: .\views.py:YY
+#: .\pages\views.py:149
 msgid "Mother not found"
 msgstr "لم يتم العثور على الأم"
 
-#: .\views.py:ZZ
+#: .\pages\views.py:151
 msgid "Child not found or does not belong to this mother"
 msgstr "الطفل غير موجود أو لا يتبع هذه الأم"
 
-#: .\views.py:BB
-msgid "Email not found"
-msgstr "البريد الإلكتروني غير موجود"
-
-#: .\views.py:CC
-msgid "Verification code sent to your email."
-msgstr "تم إرسال رمز التحقق إلى بريدك الإلكتروني."
-
-#: .\views.py:DD
-msgid "User not found"
-msgstr "المستخدم غير موجود"
-
-#: .\views.py:EE
-msgid "Verification code not found."
-msgstr "رمز التحقق غير موجود"
-
-#: .\views.py:FF
-msgid "Password has been reset successfully."
-msgstr "تم إعادة تعيين كلمة المرور بنجاح."
-
-#: .\views.py:GG
+#: .\pages\views.py:383
 msgid "No tasks found for the specified child!"
 msgstr "لا توجد مهام لهذا الطفل المحدد!"
 
+#: .\pages\views.py:392 .\pages\views.py:399
+msgid "Task not found!"
+msgstr "المهمه غير موجوده"
 
-#: .\views.py:JJ
+#: .\pages\views.py:398
+msgid "Deleted successfully!"
+msgstr "تم حذف بنجاح"
+
+#: .\pages\views.py:413
+msgid "Invalid category"
+msgstr "فئه غير صالحه"
+
+#: .\pages\views.py:430
 msgid "No favorite tasks found!"
 msgstr "لا توجد مهام مفضلة!"
 
-#: .\views.py:KK
-msgid "Photo uploaded successfully."
-msgstr "تم رفع الصورة بنجاح."
+#~ msgid "Login successful"
+#~ msgstr "تسجيل دخول بنجاح"
 
-#: .\views.py:LL
-msgid "لا توجد صورة لهذا الطفل"
-msgstr "No photo found for this child."
+#~ msgid "updated successfully."
+#~ msgstr "تم التحديث بنجاح"
 
-#: .\views.py:MM
-msgid "تم تحديث الصورة بنجاح"
-msgstr "Photo updated successfully."
+#~ msgctxt "gender"
+#~ msgid "Male"
+#~ msgstr "ذكر"
+
+#~ msgctxt "gender"
+#~ msgid "Female"
+#~ msgstr "أنثى"
+
+#~ msgid "هذا المستخدم غير مرتبط بأي أم."
+#~ msgstr "This user is not linked to any mother."
+
+#~ msgid "Email not found"
+#~ msgstr "البريد الإلكتروني غير موجود"
+
+#~ msgid "Verification code sent to your email."
+#~ msgstr "تم إرسال رمز التحقق إلى بريدك الإلكتروني."
+
+#~ msgid "User not found"
+#~ msgstr "المستخدم غير موجود"
+
+#~ msgid "Verification code not found."
+#~ msgstr "رمز التحقق غير موجود"
+
+#~ msgid "Password has been reset successfully."
+#~ msgstr "تم إعادة تعيين كلمة المرور بنجاح."
+
+#~ msgid "Photo uploaded successfully."
+#~ msgstr "تم رفع الصورة بنجاح."
+
+#~ msgid "لا توجد صورة لهذا الطفل"
+#~ msgstr "No photo found for this child."
+
+#~ msgid "تم تحديث الصورة بنجاح"
+#~ msgstr "Photo updated successfully."

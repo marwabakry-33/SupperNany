@@ -56,9 +56,9 @@ class GrowthRecordSerializer(serializers.ModelSerializer):
             return 'تاريخ الميلاد غير متوفر'
 
         if age_in_months <= 12:
-            return 'normal' if 45 <= obj.height <= 80 else 'unnormal'
+            return "normal" if 45 <= obj.height <= 80 else "unnormal"
         elif age_in_months <= 24:
-            return 'normal' if 75 <= obj.height <= 95 else 'unnormal'
+            return "normal" if 75 <= obj.height <= 95 else "unnormal"
         else:
             return 'لا توجد بيانات كافية للعمر'
 
