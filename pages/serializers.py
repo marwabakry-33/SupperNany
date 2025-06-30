@@ -16,10 +16,51 @@ class TaskSerializer(serializers.ModelSerializer):
 
 # serializers.py
 
+from rest_framework import serializers
+from datetime import date
+
+from rest_framework import serializers
+from datetime import date
+
 class GrowthRecordSerializer(serializers.ModelSerializer):
+    weight_status = serializers.SerializerMethodField()
+    height_status = serializers.SerializerMethodField()
+
     class Meta:
         model = GrowthRecord
-        fields = ['id', 'weight', 'height', 'date']  # حذفنا 'child'
+        fields = ['id', 'weight', 'height', 'date', 'weight_status', 'height_status']
+
+    def get_age_in_months(self, obj):
+        child = obj.child
+        birth_date = child.birth_date
+        if not birth_date:
+            return None
+        age_in_days = (obj.date - birth_date).days
+        return round(age_in_days / 30.44)
+
+    def get_weight_status(self, obj):
+        age_in_months = self.get_age_in_months(obj)
+        if age_in_months is None:
+            return 'تاريخ الميلاد غير متوفر'
+
+        if age_in_months <= 12:
+            return 'Normal' if 2.5 <= obj.weight <= 10 else 'Abnormal'
+        elif age_in_months <= 24:
+            return 'Normal' if 9 <= obj.weight <= 14 else 'Abnormal'
+        else:
+            return 'لا توجد بيانات كافية للعمر'
+
+    def get_height_status(self, obj):
+        age_in_months = self.get_age_in_months(obj)
+        if age_in_months is None:
+            return 'تاريخ الميلاد غير متوفر'
+
+        if age_in_months <= 12:
+            return 'Normal' if 45 <= obj.height <= 80 else 'Abnormal'
+        elif age_in_months <= 24:
+            return 'Normal' if 75 <= obj.height <= 95 else 'Abnormal'
+        else:
+            return 'لا توجد بيانات كافية للعمر'
 
 from django.utils.translation import gettext as _
 
@@ -51,6 +92,11 @@ class ChildSerializer(serializers.ModelSerializer):
 
 from .models import ChildPhoto
 
+class PrChildSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = preChild2
+        fields = ['id', 'baby', 'gender', 'birth_date']
+
 class ChildPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChildPhoto
@@ -62,10 +108,6 @@ class MotherUpdateSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'email']
 
 
-class PrChildSerializer2(serializers.ModelSerializer):
-    class Meta:
-        model = preChild2
-        fields = ['id', 'baby', 'gender', 'birth_date']
 
 
 class MotherSerializer(serializers.ModelSerializer):
