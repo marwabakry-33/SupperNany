@@ -47,9 +47,9 @@ class GrowthRecordSerializer(serializers.ModelSerializer):
             return _('Birth date not available')
 
         if age_in_months <= 12:
-            return _('Normal') if 2.5 <= obj.weight <= 10 else _('Unnormal')
+            return _("normal") if 2.5 <= obj.weight <= 10 else _("unnormal")
         elif age_in_months <= 24:
-            return _('Normal') if 9 <= obj.weight <= 14 else _('Unnormal')
+            return _("normal") if 9 <= obj.weight <= 14 else _("unnormal")
         else:
             return _('Data not available for this age')
 
@@ -59,9 +59,9 @@ class GrowthRecordSerializer(serializers.ModelSerializer):
             return _('Birth date not available')
 
         if age_in_months <= 12:
-            return _('Normal') if 45 <= obj.height <= 80 else _('Unnormal')
+            return _("normal") if 45 <= obj.height <= 80 else _("unnormal")
         elif age_in_months <= 24:
-            return _('Normal') if 75 <= obj.height <= 95 else _('Unnormal')
+            return _("normal") if 75 <= obj.height <= 95 else _("unnormal")
         else:
             return _('Data not available for this age')
 
