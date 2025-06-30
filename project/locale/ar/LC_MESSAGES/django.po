@@ -28,3 +28,9 @@ msgstr "العربية"
 
 msgid "Invalid category"
 msgstr "فئة غير صالحة"
+
+msgid "normal"
+msgstr "طبيعي"
+
+msgid "unnormal"
+msgstr "غير طبيعي"
