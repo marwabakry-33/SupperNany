@@ -223,8 +223,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # أو SMTP الخاص بمزود بريدك الإلكتروني
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your_email@gmail.com'
-EMAIL_HOST_PASSWORD = 'your_app_password'  # كلمة المرور الخاصة بالتطبيق (App Password)
 
+
+EMAIL_HOST_USER = 'marwabakry284@gmail.com'         # ← اكتبي هنا الإيميل اللي هيبعت الرسائل
+EMAIL_HOST_PASSWORD = 'ekrocagumvdzhlnt'          # ← باسورد خاص من Gmail (App password)
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 LOGIN_URL = 'login'
