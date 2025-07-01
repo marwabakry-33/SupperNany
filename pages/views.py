@@ -44,6 +44,15 @@ def register(request):
     if serializer.is_valid():
         mother = serializer.save()
         user = User.objects.get(username=email)
+        
+        send_mail(
+            subject="تأكيد التسجيل",
+            message=f"مرحبًا {mother.first_name}، تم إنشاء حسابك بنجاح على التطبيق.",
+            from_email=None,  # سيستخدم EMAIL_HOST_USER تلقائيًا
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
 
         # ✅ توليد JWT Token
         refresh = RefreshToken.for_user(user)
