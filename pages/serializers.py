@@ -114,6 +114,11 @@ class MotherUpdateSerializer(serializers.ModelSerializer):
 
 
 
+import re
+from rest_framework import serializers
+from django.contrib.auth.models import User
+from .models import Mother
+
 class MotherSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -126,25 +131,37 @@ class MotherSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'email', 'password', 'confirm_password']
 
     def validate(self, data):
-        password = data['password']  # إزالة المسافات الزائدة
-        confirm_password = data['confirm_password']  # إزالة المسافات الزائدة
+        password = data['password']
+        confirm_password = data['confirm_password']
 
         if password != confirm_password:
             raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
 
-        # ✅ التحقق من عدم وجود المستخدم مسبقًا
         if User.objects.filter(username=data['email']).exists():
             raise serializers.ValidationError({"email": "This email is already registered."})
-         
 
+        # ✅ التحقق اليدوي من قوة كلمة المرور
+        if len(password) < 8:
+            raise serializers.ValidationError({"password": "Password must be at least 8 characters long."})
+
+        if not re.search(r'[A-Z]', password):
+            raise serializers.ValidationError({"password": "Password must contain at least one uppercase letter (A-Z)."})
+
+        if not re.search(r'[a-z]', password):
+            raise serializers.ValidationError({"password": "Password must contain at least one lowercase letter (a-z)."})
+
+        if not re.search(r'\d', password):
+            raise serializers.ValidationError({"password": "Password must contain at least one number (0-9)."})
+
+        if not re.search(r'[!@#$%^&*()_\-+=\[\]{};:\'",.<>/?\\|`~]', password):
+            raise serializers.ValidationError({"password": "Password must contain at least one special character (#@$%...)."})
+        
         return data
 
-    
     def create(self, validated_data):
         password = validated_data.pop('password')
         validated_data.pop('confirm_password')
 
-        # إنشاء المستخدم أولاً
         user = User.objects.create_user(
             username=validated_data['email'],
             email=validated_data['email'],
@@ -153,7 +170,6 @@ class MotherSerializer(serializers.ModelSerializer):
             last_name=validated_data['last_name'],
         )
 
-        # إنشاء الأم بعد ربطها بالمستخدم
         mother = Mother.objects.create(
             user=user,
             first_name=validated_data['first_name'],
@@ -162,7 +178,6 @@ class MotherSerializer(serializers.ModelSerializer):
         )
 
         return mother
-    
 
 
 
