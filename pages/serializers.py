@@ -140,23 +140,24 @@ class MotherSerializer(serializers.ModelSerializer):
         if User.objects.filter(username=data['email']).exists():
             raise serializers.ValidationError({"email": "This email is already registered."})
 
-        # ✅ التحقق اليدوي من قوة كلمة المرور
+        # ✅ تحقق أسرع من قوة الباسورد:
         if len(password) < 8:
             raise serializers.ValidationError({"password": "Password must be at least 8 characters long."})
 
-        if not re.search(r'[A-Z]', password):
-            raise serializers.ValidationError({"password": "Password must contain at least one uppercase letter (A-Z)."})
+        if not any(c.isupper() for c in password):
+            raise serializers.ValidationError({"password": "Must contain at least one uppercase letter."})
 
-        if not re.search(r'[a-z]', password):
-            raise serializers.ValidationError({"password": "Password must contain at least one lowercase letter (a-z)."})
+        if not any(c.islower() for c in password):
+            raise serializers.ValidationError({"password": "Must contain at least one lowercase letter."})
 
-        if not re.search(r'\d', password):
-            raise serializers.ValidationError({"password": "Password must contain at least one number (0-9)."})
+        if not any(c.isdigit() for c in password):
+            raise serializers.ValidationError({"password": "Must contain at least one number."})
 
-        if not re.search(r'[!@#$%^&*()_\-+=\[\]{};:\'",.<>/?\\|`~]', password):
-            raise serializers.ValidationError({"password": "Password must contain at least one special character (#@$%...)."})
-        
+        if not any(c in "!@#$%^&*()_+-=[]{},.<>?/\\|" for c in password):
+            raise serializers.ValidationError({"password": "Must contain at least one special character."})
+
         return data
+
 
     def create(self, validated_data):
         password = validated_data.pop('password')
