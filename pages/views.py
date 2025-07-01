@@ -235,7 +235,7 @@ def user_login(request):
                 send_mail(
                     subject="نصيحة اليوم بعد تسجيل الدخول 🌸",
                     message=email_message,
-                    from_email="your_email@gmail.com",  # ← غيريها لبريدك
+                    from_email="marwabakry284@gmail.com",  # ← غيريها لبريدك
                     recipient_list=[user.email],
                     fail_silently=True
                 )
