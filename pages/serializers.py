@@ -130,6 +130,33 @@ class MotherSerializer(serializers.ModelSerializer):
         model = Mother
         fields = ['id', 'first_name', 'last_name', 'email', 'password', 'confirm_password']
 
+    # def validate(self, data):
+    #     password = data['password']
+    #     confirm_password = data['confirm_password']
+
+    #     if password != confirm_password:
+    #         raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
+
+    #     if User.objects.filter(username=data['email']).exists():
+    #         raise serializers.ValidationError({"email": "This email is already registered."})
+
+    #     # ✅ تحقق أسرع من قوة الباسورد:
+    #     if len(password) < 8:
+    #         raise serializers.ValidationError({"password": "Password must be at least 8 characters long."})
+
+    #     if not any(c.isupper() for c in password):
+    #         raise serializers.ValidationError({"password": "Must contain at least one uppercase letter."})
+
+    #     if not any(c.islower() for c in password):
+    #         raise serializers.ValidationError({"password": "Must contain at least one lowercase letter."})
+
+    #     if not any(c.isdigit() for c in password):
+    #         raise serializers.ValidationError({"password": "Must contain at least one number."})
+
+    #     if not any(c in "!@#$%^&*()_+-=[]{},.<>?/\\|" for c in password):
+    #         raise serializers.ValidationError({"password": "Must contain at least one special character."})
+
+    #     return data
     def validate(self, data):
         password = data['password']
         confirm_password = data['confirm_password']
@@ -140,23 +167,8 @@ class MotherSerializer(serializers.ModelSerializer):
         if User.objects.filter(username=data['email']).exists():
             raise serializers.ValidationError({"email": "This email is already registered."})
 
-        # ✅ تحقق أسرع من قوة الباسورد:
-        if len(password) < 8:
-            raise serializers.ValidationError({"password": "Password must be at least 8 characters long."})
-
-        if not any(c.isupper() for c in password):
-            raise serializers.ValidationError({"password": "Must contain at least one uppercase letter."})
-
-        if not any(c.islower() for c in password):
-            raise serializers.ValidationError({"password": "Must contain at least one lowercase letter."})
-
-        if not any(c.isdigit() for c in password):
-            raise serializers.ValidationError({"password": "Must contain at least one number."})
-
-        if not any(c in "!@#$%^&*()_+-=[]{},.<>?/\\|" for c in password):
-            raise serializers.ValidationError({"password": "Must contain at least one special character."})
-
         return data
+
 
 
     def create(self, validated_data):
