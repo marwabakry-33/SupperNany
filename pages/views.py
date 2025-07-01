@@ -110,6 +110,10 @@ def update_mother_profile(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+from django.core.mail import send_mail
+from .models import AdviceBaby  # أو أي فئة نصائح مناسبة
+import random
+
 class PreRegisterChildAPIView2(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -121,6 +125,7 @@ class PreRegisterChildAPIView2(APIView):
             except Mother.DoesNotExist:
                 return Response({"error": _("Mother not found for this user")}, status=status.HTTP_404_NOT_FOUND)
 
+            # إنشاء الطفل
             child = preChild2.objects.create(
                 mother=mother,
                 baby=serializer.validated_data['baby'],
@@ -128,13 +133,29 @@ class PreRegisterChildAPIView2(APIView):
                 birth_date=serializer.validated_data['birth_date']
             )
 
-            # توليد توكن للمستخدم الحالي
+            # 🔔 إرسال نصيحة عشوائية على الإيميل
+            try:
+                advice_list = AdviceBaby.objects.all()
+                if advice_list.exists() and request.user.email:
+                    advice = random.choice(advice_list)
+                    advice_text = advice.advice_baby  # أو استخدمي advice.advice_baby_ar لو عايزة بالعربي
+                    send_mail(
+                        subject='👶 نصيحة للطفل الجديد من Supper Nany',
+                        message=advice_text,
+                        from_email='marwabakry284@gmail.com',  # عدليها حسب إعداداتك
+                        recipient_list=[request.user.email],
+                        fail_silently=True,
+                    )
+            except Exception as e:
+                print(f"❗ فشل إرسال الإيميل: {e}")
+
+            # 🎟️ توليد التوكن
             refresh = RefreshToken.for_user(request.user)
 
             return Response({
                 'child': {
                     'id': child.id,
-                    'baby':child.baby,
+                    'baby': child.baby,
                     'gender': child.gender,
                     'birth_date': child.birth_date,
                     'message': _('Child has been successfully registered and linked to mother')
@@ -142,7 +163,7 @@ class PreRegisterChildAPIView2(APIView):
                 'access': str(refresh.access_token),
                 'refresh': str(refresh)
             }, status=status.HTTP_201_CREATED)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class GetChildByIdAPIView(APIView):
