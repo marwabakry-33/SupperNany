@@ -4,7 +4,6 @@ from .serializers import *
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
@@ -13,8 +12,12 @@ import random
 from django.core.mail import send_mail
 from .models import User, PasswordResetCode
 from django.utils.translation import gettext as _
-
+from rest_framework import generics
 import logging
+import os
+from django.conf import settings
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -159,11 +162,23 @@ class GetChildByIdAPIView(APIView):
         except preChild2.DoesNotExist:
             return Response({'error': _('Child not found or does not belong to this mother')}, status=status.HTTP_404_NOT_FOUND)
 
-import os
-from django.conf import settings
 from .models import Child, ChildPhoto, preChild2, Mother
 
 LAST_USER_FILE = os.path.join(settings.BASE_DIR, 'last_user.txt')
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+from django.core.mail import send_mail
+import os
+import random
+
+from .serializers import LoginSerializer
+from .models import Mother, preChild2, ChildPhoto, AdviceMother
+
+LAST_CHILD_FILE = 'last_child_id.txt'  # تأكدي من المسار الصحيح للملف المؤقت
 
 @api_view(['POST'])
 def user_login(request):
@@ -174,20 +189,20 @@ def user_login(request):
 
         user = authenticate(username=username, password=password)
         if user is not None:
-            # ✅ جلب بيانات الأم والطفل الحالي
+            # ✅ جلب بيانات الأم والطفل
             try:
                 mother = Mother.objects.get(user=user)
                 child = preChild2.objects.filter(mother=mother).first()
             except Mother.DoesNotExist:
                 child = None
 
-            # ✅ جلب آخر preChild2.id من ملف مؤقت
+            # ✅ جلب آخر ID محفوظ
             last_child_id = None
             if os.path.exists(LAST_CHILD_FILE):
                 with open(LAST_CHILD_FILE, 'r') as f:
                     last_child_id = f.read().strip()
 
-            # 🔁 حذف الصورة لو الطفل اتغير
+            # 🔁 حذف صورة الطفل السابق
             if child and last_child_id and str(child.id) != last_child_id:
                 try:
                     photo = ChildPhoto.objects.get(pre_id=last_child_id)
@@ -197,12 +212,35 @@ def user_login(request):
                 except ChildPhoto.DoesNotExist:
                     pass
 
-            # ✏️ تحديث رقم الطفل الحالي
+            # ✏️ تحديث الطفل الحالي
             if child:
                 with open(LAST_CHILD_FILE, 'w') as f:
                     f.write(str(child.id))
 
-            # 🎟️ إنشاء التوكن
+            # ✅ إرسال نصيحة للأم على الإيميل
+            advice_list = AdviceMother.objects.all()
+            if advice_list.exists():
+                random_advice = random.choice(advice_list)
+                advice_text = random_advice.advice_mather
+
+                email_message = f"""
+مرحبًا {user.first_name if hasattr(user, 'first_name') else ''} 👋
+
+تم تسجيل الدخول بنجاح ✅
+
+💡 نصيحة اليوم للأمهات:
+{advice_text}
+"""
+
+                send_mail(
+                    subject="نصيحة اليوم بعد تسجيل الدخول 🌸",
+                    message=email_message,
+                    from_email="your_email@gmail.com",  # ← غيريها لبريدك
+                    recipient_list=[user.email],
+                    fail_silently=True
+                )
+
+            # 🎟️ إنشاء JWT Token
             refresh = RefreshToken.for_user(user)
 
             child_data = {
@@ -224,14 +262,6 @@ def user_login(request):
         return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-from rest_framework.permissions import IsAuthenticated
-
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from .models import Child
-from .serializers import ChildSerializer
 
 class RegisterChildAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -438,7 +468,6 @@ class FavoriteTasksForChild(APIView):
             return Response(serializer.data)
         return Response({"error": _("No favorite tasks found!")}, status=status.HTTP_404_NOT_FOUND)
 
-from rest_framework import generics
 
 
 class HowToByCategoryView(generics.ListCreateAPIView):  # بدل ListAPIView
