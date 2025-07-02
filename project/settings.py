@@ -91,7 +91,7 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = [
-    BASE_DIR / 'locale',
+    BASE_DIR / 'pages' / 'locale',
 ]
 
 
@@ -233,5 +233,5 @@ EMAIL_HOST_PASSWORD = 'ekrocagumvdzhlnt'          # ← باسورد خاص من
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 LOGIN_URL = 'login'
-LANGUAGE_CODE = 'ar'
+LANGUAGE_CODE = ar
 USE_I18N = True
