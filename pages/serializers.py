@@ -47,9 +47,9 @@ class GrowthRecordSerializer(serializers.ModelSerializer):
             return _('Birth date not available')
 
         if age_in_months <= 12:
-            return _("normal") if 2.5 <= obj.weight <= 10 else _("unnormal")
+            return _("Normal") if 2.5 <= obj.weight <= 10 else _("Unnormal")
         elif age_in_months <= 24:
-            return _("normal") if 9 <= obj.weight <= 14 else _("unnormal")
+            return _("Normal") if 9 <= obj.weight <= 14 else _("Unnormal")
         else:
             return _('Data not available for this age')
 
@@ -59,9 +59,9 @@ class GrowthRecordSerializer(serializers.ModelSerializer):
             return _('Birth date not available')
 
         if age_in_months <= 12:
-            return _("normal") if 45 <= obj.height <= 80 else _("unnormal")
+            return _("Normal") if 45 <= obj.height <= 80 else _("Unnormal")
         elif age_in_months <= 24:
-            return _("normal") if 75 <= obj.height <= 95 else _("unnormal")
+            return _("Normal") if 75 <= obj.height <= 95 else _("Unnormal")
         else:
             return _('Data not available for this age')
 
@@ -80,13 +80,13 @@ class ChildSerializer(serializers.ModelSerializer):
         read_only_fields = ['feedings_status', 'sleeping_status', 'diapers_status']
 
     def get_feedings_status(self, obj):
-        return _("normal") if 5 <= obj.feedings <= 8 else _("unnormal")
+        return _("Normal") if 5 <= obj.feedings <= 8 else _("Unnormal")
 
     def get_sleeping_status(self, obj):
-        return _("normal") if 10 <= obj.sleeping <= 14 else _("unnormal")
+        return _("Normal") if 10 <= obj.sleeping <= 14 else _("Unnormal")
 
     def get_diapers_status(self, obj):
-        return _("normal") if 4 <= obj.Diapers <= 6 else _("unnormal")
+        return _("Normal") if 4 <= obj.Diapers <= 6 else _("Unnormal")
     
     def validate(self, data):
         for field in ['feedings', 'sleeping', 'Diapers']:
