@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-01 00:13+0300\n"
+"POT-Creation-Date: 2025-07-02 09:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,71 +19,89 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
-#: .\pages\serializers.py:79 .\pages\serializers.py:82
-#: .\pages\serializers.py:85
-msgid "normal"
+#: .\pages\serializers.py:47 .\pages\serializers.py:59
+msgid "Birth date not available"
+msgstr "تاريخ الميلاد غير متوفر"
+
+#: .\pages\serializers.py:50 .\pages\serializers.py:52
+#: .\pages\serializers.py:62 .\pages\serializers.py:64
+#: .\pages\serializers.py:83 .\pages\serializers.py:86
+#: .\pages\serializers.py:89
+msgid "Normal"
 msgstr "طبيعي"
 
-#: .\pages\serializers.py:79 .\pages\serializers.py:82
-#: .\pages\serializers.py:85
-msgid "unnormal"
+#: .\pages\serializers.py:50 .\pages\serializers.py:52
+#: .\pages\serializers.py:62 .\pages\serializers.py:64
+#: .\pages\serializers.py:83 .\pages\serializers.py:86
+#: .\pages\serializers.py:89
+msgid "Unnormal"
 msgstr "غير طبيعي"
 
-#: .\pages\views.py:32
+#: .\pages\serializers.py:54 .\pages\serializers.py:66
+msgid "Data not available for this age"
+msgstr "لا توجد بيانات كافية للعمر"
+
+#: .\pages\views.py:35
 msgid "Password must be a non-empty string."
 msgstr ""
 
-#: .\pages\views.py:35
+#: .\pages\views.py:38
 msgid "Confirm password must be a non-empty string."
 msgstr ""
 
-#: .\pages\views.py:38
+#: .\pages\views.py:41
 msgid "Passwords do not match."
 msgstr ""
 
-#: .\pages\views.py:41
+#: .\pages\views.py:44
 msgid "Email must be a non-empty string."
 msgstr ""
 
-#: .\pages\views.py:55
+#: .\pages\views.py:67
 msgid "Registration successful"
 msgstr ""
 
-#: .\pages\views.py:110
+#: .\pages\views.py:126
 msgid "Mother not found for this user"
 msgstr ""
 
-#: .\pages\views.py:128
+#: .\pages\views.py:161
 msgid "Child has been successfully registered and linked to mother"
 msgstr ""
 
-#: .\pages\views.py:149
+#: .\pages\views.py:182
 msgid "Mother not found"
 msgstr "لم يتم العثور على الأم"
 
-#: .\pages\views.py:151
+#: .\pages\views.py:184
 msgid "Child not found or does not belong to this mother"
 msgstr "الطفل غير موجود أو لا يتبع هذه الأم"
 
-#: .\pages\views.py:383
+#: .\pages\views.py:443
 msgid "No tasks found for the specified child!"
 msgstr "لا توجد مهام لهذا الطفل المحدد!"
 
-#: .\pages\views.py:392 .\pages\views.py:399
+#: .\pages\views.py:452 .\pages\views.py:459
 msgid "Task not found!"
 msgstr "المهمه غير موجوده"
 
-#: .\pages\views.py:398
+#: .\pages\views.py:458
 msgid "Deleted successfully!"
 msgstr "تم حذف بنجاح"
 
-#: .\pages\views.py:413
+#: .\pages\views.py:473
 msgid "Invalid category"
 msgstr "فئه غير صالحه"
 
-#: .\pages\views.py:430
+#: .\pages\views.py:490
 msgid "No favorite tasks found!"
 msgstr "لا توجد مهام مفضلة!"
+
+#~ msgid "normal"
+#~ msgstr "طبيعي"
+
+#~ msgid "unnormal"
+#~ msgstr "غير طبيعي"
 
 #~ msgid "Login successful"
 #~ msgstr "تسجيل دخول بنجاح"
@@ -125,16 +143,3 @@ msgstr "لا توجد مهام مفضلة!"
 
 #~ msgid "تم تحديث الصورة بنجاح"
 #~ msgstr "Photo updated successfully."
-
-
-#~ msgid "Normal"
-#~ msgstr "طبيعي"
-
-#~ msgid "Unnormal"
-#~ msgstr "غير طبيعي"
-
-#~ msgid "Birth date not available"
-#~ msgstr "تاريخ الميلاد غير متوفر"
-
-#~ msgid "Data not available for this age"
-#~ msgstr "لا توجد بيانات كافية للعمر"
