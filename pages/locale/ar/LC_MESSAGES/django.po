@@ -143,3 +143,9 @@ msgstr "لا توجد مهام مفضلة!"
 
 #~ msgid "تم تحديث الصورة بنجاح"
 #~ msgstr "Photo updated successfully."
+
+msgid "normal"
+msgstr "طبيعي"
+
+msgid "unnormal"
+msgstr "غير طبيعي"
