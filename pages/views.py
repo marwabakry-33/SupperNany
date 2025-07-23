@@ -110,10 +110,6 @@ def update_mother_profile(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-from django.core.mail import send_mail
-from .models import AdviceBaby  # أو أي فئة نصائح مناسبة
-import random
-
 class PreRegisterChildAPIView2(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -142,7 +138,7 @@ class PreRegisterChildAPIView2(APIView):
                     send_mail(
                         subject='👶 نصيحة للطفل الجديد من Supper Nany',
                         message=advice_text,
-                        from_email='marwabakry284@gmail.com',  # عدليها حسب إعداداتك
+                        from_email='marwabakry284@gmail.com', 
                         recipient_list=[request.user.email],
                         fail_silently=True,
                     )
@@ -183,23 +179,14 @@ class GetChildByIdAPIView(APIView):
         except preChild2.DoesNotExist:
             return Response({'error': _('Child not found or does not belong to this mother')}, status=status.HTTP_404_NOT_FOUND)
 
-from .models import Child, ChildPhoto, preChild2, Mother
 
 LAST_USER_FILE = os.path.join(settings.BASE_DIR, 'last_user.txt')
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
-from django.core.mail import send_mail
-import os
-import random
 
-from .serializers import LoginSerializer
-from .models import Mother, preChild2, ChildPhoto, AdviceMother
 
 LAST_CHILD_FILE = 'last_child_id.txt'  # تأكدي من المسار الصحيح للملف المؤقت
+
+
 
 @api_view(['POST'])
 def user_login(request):
@@ -210,20 +197,18 @@ def user_login(request):
 
         user = authenticate(username=username, password=password)
         if user is not None:
-            # ✅ جلب بيانات الأم والطفل
             try:
                 mother = Mother.objects.get(user=user)
                 child = preChild2.objects.filter(mother=mother).first()
             except Mother.DoesNotExist:
                 child = None
 
-            # ✅ جلب آخر ID محفوظ
+            # حذف صورة الطفل السابق
             last_child_id = None
             if os.path.exists(LAST_CHILD_FILE):
                 with open(LAST_CHILD_FILE, 'r') as f:
                     last_child_id = f.read().strip()
 
-            # 🔁 حذف صورة الطفل السابق
             if child and last_child_id and str(child.id) != last_child_id:
                 try:
                     photo = ChildPhoto.objects.get(pre_id=last_child_id)
@@ -233,12 +218,12 @@ def user_login(request):
                 except ChildPhoto.DoesNotExist:
                     pass
 
-            # ✏️ تحديث الطفل الحالي
+            # تحديث ملف الطفل الحالي
             if child:
                 with open(LAST_CHILD_FILE, 'w') as f:
                     f.write(str(child.id))
 
-            # ✅ إرسال نصيحة للأم على الإيميل
+            # إرسال نصيحة
             advice_list = AdviceMother.objects.all()
             if advice_list.exists():
                 random_advice = random.choice(advice_list)
@@ -252,18 +237,41 @@ def user_login(request):
 💡 نصيحة اليوم للأمهات:
 {advice_text}
 """
-
                 send_mail(
                     subject="نصيحة اليوم بعد تسجيل الدخول 🌸",
                     message=email_message,
-                    from_email="marwabakry284@gmail.com",  # ← غيريها لبريدك
+                    from_email="marwabakry284@gmail.com",
                     recipient_list=[user.email],
                     fail_silently=True
                 )
 
-            # 🎟️ إنشاء JWT Token
-            refresh = RefreshToken.for_user(user)
+            # إرسال تذكير بالتطعيم
+            if child:
+                today = date.today()
+                birth_date = child.birth_date
+                vaccination_dates = [birth_date + timedelta(days=90 * i) for i in range(1, 5)]
+                for v_date in vaccination_dates:
+                    if v_date == today + timedelta(days=1):
+                        send_mail(
+                            subject="📅 تذكير: تطعيم الطفل غدًا",
+                            message=f"مرحبًا {user.first_name or ''}،\n\nتذكير: معاد تطعيم طفلك غدًا {v_date}.\nيرجى الاستعداد 🌸",
+                            from_email="marwabakry284@gmail.com",
+                            recipient_list=[user.email],
+                            fail_silently=True
+                        )
+                        break
+                    elif v_date == today:
+                        send_mail(
+                            subject="💉 اليوم معاد تطعيم الطفل!",
+                            message=f"صباح الخير {user.first_name or ''}،\n\nاليوم {v_date} هو ميعاد تطعيم طفلك.\nيرجى التوجه لأقرب وحدة صحية ✅",
+                            from_email="marwabakry284@gmail.com",
+                            recipient_list=[user.email],
+                            fail_silently=True
+                        )
+                        break
 
+            # إنشاء JWT
+            refresh = RefreshToken.for_user(user)
             child_data = {
                 'id': child.id,
                 'baby': child.baby,

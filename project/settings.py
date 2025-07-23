@@ -229,7 +229,7 @@ EMAIL_USE_TLS = True
 
 
 EMAIL_HOST_USER = 'marwabakry284@gmail.com'         # ← اكتبي هنا الإيميل اللي هيبعت الرسائل
-EMAIL_HOST_PASSWORD = 'ekrocagumvdzhlnt'          # ← باسورد خاص من Gmail (App password)
+#EMAIL_HOST_PASSWORD = 'ekrocagumvdzhlnt'          # ← باسورد خاص من Gmail (App password)
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 LOGIN_URL = 'login'

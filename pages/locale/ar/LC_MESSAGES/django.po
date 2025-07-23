@@ -27,15 +27,12 @@ msgstr "تاريخ الميلاد غير متوفر"
 #: .\pages\serializers.py:62 .\pages\serializers.py:64
 #: .\pages\serializers.py:83 .\pages\serializers.py:86
 #: .\pages\serializers.py:89
-msgid "Normal"
-msgstr "طبيعي"
 
 #: .\pages\serializers.py:50 .\pages\serializers.py:52
 #: .\pages\serializers.py:62 .\pages\serializers.py:64
 #: .\pages\serializers.py:83 .\pages\serializers.py:86
 #: .\pages\serializers.py:89
-msgid "Unnormal"
-msgstr "غير طبيعي"
+
 
 #: .\pages\serializers.py:54 .\pages\serializers.py:66
 msgid "Data not available for this age"
@@ -144,8 +141,3 @@ msgstr "لا توجد مهام مفضلة!"
 #~ msgid "تم تحديث الصورة بنجاح"
 #~ msgstr "Photo updated successfully."
 
-msgid "normal"
-msgstr "طبيعي"
-
-msgid "unnormal"
-msgstr "غير طبيعي"
