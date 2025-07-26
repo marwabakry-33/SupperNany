@@ -47,6 +47,8 @@ urlpatterns = [
     path('child/<int:child_id>/growth/', create_growth_record, name='create_growth_record'),
     path('child/<int:child_id>/growth/view/', get_growth_records, name='get_growth_records'),
     path('growth-records/<int:child_id>/<int:record_id>/update/', update_growth_record, name='update-growth-record'),
+    path('test-vaccine/', test_vaccine_reminder, name='test-vaccine'),
+
 
 ]
 
