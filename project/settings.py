@@ -25,18 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!20pb9b#@8kotda#8@x189-kleco^6stc^n0icz+^vbzw*38)8'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'marwabakry284@gmail.com'  # ضع هنا بريدك الإلكتروني
-EMAIL_HOST_PASSWORD = '5512m3rw3'  # ضع هنا كلمة مرور التطبيق الخاصة بك
-DEFAULT_FROM_EMAIL = 'marwabakry284@gmail.com'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 #ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 ALLOWED_HOSTS = ['marwabakry23.pythonanywhere.com','localhost', '127.0.0.1', '0.0.0.0']
 #'localhost', '127.0.0.1', '0.0.0.0', 
@@ -220,18 +211,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ده مكان تجميع 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # أو SMTP الخاص بمزود بريدك الإلكتروني
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
-
-EMAIL_HOST_USER = 'marwabakry284@gmail.com'         # ← اكتبي هنا الإيميل اللي هيبعت الرسائل
-#EMAIL_HOST_PASSWORD = 'ekrocagumvdzhlnt'          # ← باسورد خاص من Gmail (App password)
+EMAIL_HOST_USER = 'marwabakry284@gmail.com'
+EMAIL_HOST_PASSWORD = 'ekrocagumvdzhlnt'  # ده لازم يكون App Password من جوجل
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-LOGIN_URL = 'login'
-LANGUAGE_CODE = 'ar'
-USE_I18N = True
+SECRET_KEY = 'django-insecure-!20pb9b#@8kotda#8@x189-kleco^6stc^n0icz+^vbzw*38)8'
