@@ -630,6 +630,8 @@ from .models import preChild2  # حسب مكان الموديل
 
 
 
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta  # لو مش مثبتة: pip install python-dateutil
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -637,35 +639,60 @@ def test_vaccine_reminder(request):
     user = request.user
     try:
         mother = Mother.objects.get(user=user)
-        child = preChild2.objects.get(mother=mother)
-    except (Mother.DoesNotExist, preChild2.DoesNotExist):
-        return Response({"error": "لا توجد بيانات أم أو طفل"}, status=404)
+        children = preChild2.objects.filter(mother=mother)
+    except Mother.DoesNotExist:
+        return Response({"error": "لا توجد بيانات أم."}, status=404)
+
+    if not children.exists():
+        return Response({"message": "لا يوجد أطفال مسجلين."}, status=404)
 
     today = date.today()
-    birth_date = child.birth_date
-    if isinstance(birth_date, datetime):
-        birth_date = birth_date.date()
+    sent = False
 
-    vaccination_dates = [birth_date + timedelta(days=90 * i) for i in range(1, 5)]
+    for child in children:
+        birth_date = child.birth_date
+        if isinstance(birth_date, datetime):
+            birth_date = birth_date.date()
 
-    for v_date in vaccination_dates:
-        if v_date == today + timedelta(days=1):
-            send_mail(
-                subject="📅 تذكير: تطعيم الطفل غدًا",
-                message=f"مرحبًا {user.first_name or ''}،\n\nتذكير: معاد تطعيم طفلك غدًا {v_date}.\nيرجى الاستعداد 🌸",
-                from_email="marwabakry284@gmail.com",
-                recipient_list=[user.email],
-                fail_silently=False
-            )
-            return Response({"message": f"📧 تم إرسال تذكير بتطعيم الطفل غدًا ({v_date})."})
-        elif v_date == today:
-            send_mail(
-                subject="💉 اليوم معاد تطعيم الطفل!",
-                message=f"صباح الخير {user.first_name or ''}،\n\nاليوم {v_date} هو ميعاد تطعيم طفلك.\nيرجى التوجه لأقرب وحدة صحية ✅",
-                from_email="marwabakry284@gmail.com",
-                recipient_list=[user.email],
-                fail_silently=False
-            )
-            return Response({"message": f"📧 تم إرسال تذكير بتطعيم الطفل اليوم ({v_date})."})
+        # قائمة مواعيد التطعيم الثابتة بعد الولادة
+        schedule = [
+            ("عند الولادة", birth_date),
+            ("تطعيم شهرين", birth_date + relativedelta(months=2)),
+            ("تطعيم 4 شهور", birth_date + relativedelta(months=4)),
+            ("تطعيم 6 شهور", birth_date + relativedelta(months=6)),
+            ("تطعيم 9 شهور", birth_date + relativedelta(months=9)),
+            ("تطعيم سنة", birth_date + relativedelta(months=12)),
+            ("تطعيم 18 شهر", birth_date + relativedelta(months=18)),
+            ("تطعيم سنتين", birth_date + relativedelta(months=24)),
+            ("تطعيم 4-6 سنوات", birth_date + relativedelta(years=5)),
+        ]
 
-    return Response({"message": "لا يوجد تطعيم اليوم أو غدًا."})
+        for desc, v_date in schedule:
+            if v_date == today + timedelta(days=1):
+                send_mail(
+                    subject=f"📅 تذكير: {desc} غدًا",
+                    message=f"مرحبًا {user.first_name or ''}،\n\nغدًا ({v_date}) هو ميعاد {desc} لطفلك.\nيرجى الاستعداد 🌸",
+                    from_email="marwabakry284@gmail.com",
+                    recipient_list=[user.email],
+                    fail_silently=False
+                )
+                sent = True
+                break
+            elif v_date == today:
+                send_mail(
+                    subject=f"💉 اليوم: {desc}",
+                    message=f"صباح الخير {user.first_name or ''}،\n\nاليوم ({v_date}) هو ميعاد {desc} لطفلك.\nيرجى التوجه لأقرب وحدة صحية ✅",
+                    from_email="marwabakry284@gmail.com",
+                    recipient_list=[user.email],
+                    fail_silently=False
+                )
+                sent = True
+                break
+
+        if sent:
+            break
+
+    if sent:
+        return Response({"message": "📧 تم إرسال تذكير بتطعيم الطفل."})
+    else:
+        return Response({"message": "لا يوجد تطعيم اليوم أو غدًا."})
